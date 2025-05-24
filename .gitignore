@@ -176,3 +176,4 @@ cython_debug/
 # Unique to this project
 /data/
 jsons/
+.DS_Store
