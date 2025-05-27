@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Overview</title>
+  <link rel="stylesheet" href="global_style.css">
+</head>
+<body>
+  <header>
+    <h1>Project Dashboard</h1>
+    <p>A Visual Overview of Key Metrics and Trends</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Chart 1: Overview</h2>
+      <div class="chart-container">Chart 1 goes here</div>
+      <p>This section describes the general trends and summary statistics shown in Chart 1.</p>
+    </section>
+
+    <section>
+      <h2>Chart 2: Breakdown by Category</h2>
+      <div class="chart-container">Chart 2 goes here</div>
+      <p>This section elaborates on data segmented by categories as shown in Chart 2.</p>
+    </section>
+
+    <section>
+      <h2>Chart 3: Time Series Analysis</h2>
+      <div class="chart-container">Chart 3 goes here</div>
+      <p>This section discusses temporal patterns revealed in Chart 3.</p>
+    </section>
+
+    <section>
+      <h2>Chart 4: Comparative Metrics</h2>
+      <div class="chart-container">Chart 4 goes here</div>
+      <p>This section compares multiple variables or groups in Chart 4.</p>
+    </section>
+
+    <section>
+      <h2>Chart 5: Insights & Anomalies</h2>
+      <div class="chart-container">Chart 5 goes here</div>
+      <p>This section highlights notable findings and outliers found in Chart 5.</p>
+    </section>
+  </main>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1
+    });
+
+    document.querySelectorAll('section').forEach(section => {
+      observer.observe(section);
+    });
+  </script>
+</body>
+</html>
