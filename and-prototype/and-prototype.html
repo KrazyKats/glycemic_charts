@@ -2,15 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard Overview</title>
-  <link rel="stylesheet" href="global_style.css">
-  <link rel="stylesheet" href="style.css">
+  <title>Glucose Spike Analysis</title>
+  <link rel="stylesheet" href="and-prototype-style.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
   <header>
-    <h1>Project Dashboard</h1>
-    <p>A Visual Overview of Key Metrics and Trends</p>
+    <h1>Glycemic Response Explorer</h1>
   </header>
 
   <main>
@@ -26,7 +24,7 @@
           Other meals, not so much.
           It varies from person to person. 
           And it varies based on a bunch of factors.
-          One particular (and perhaps intuitive) factor that influences glucose response to a meal is its <strong>macronutrient content</strong>.
+          One particular (and perhaps intuitive) factor that influences glucose response is the <strong>macronutrient content</strong> of the meal. 
         </p>
 
         <p class="intro-description">
@@ -82,38 +80,13 @@
       <h2>Average Glucose Spike by Protein Bins</h2>
       <svg></svg>
     </section>
-
-    <div id="bar-tooltip" class="tooltip" style="opacity: 0;"></div>
-
-    <section>
-      <h2>Chart 4: Comparative Metrics</h2>
-      <div class="chart-container">Chart 4 goes here</div>
-      <p>This section compares multiple variables or groups in Chart 4.</p>
-    </section>
-
-    <section>
-      <h2>Chart 5: Insights & Anomalies</h2>
-      <div class="chart-container">Chart 5 goes here</div>
-      <p>This section highlights notable findings and outliers found in Chart 5.</p>
-    </section>
+  <div id="bar-tooltip" class="tooltip" style="opacity: 0;"></div>
   </main>
 
-  <script>
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, {
-      threshold: 0.1
-    });
+  <footer>
+    <p>Team Meta Glycemia</p>
+  </footer>
 
-    document.querySelectorAll('section').forEach(section => {
-      observer.observe(section);
-    });
-  </script>
   <script src="and-bars.js"></script>
   <script src="intro.js"></script>
 </body>
