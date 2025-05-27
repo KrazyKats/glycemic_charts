@@ -83,9 +83,9 @@ function createCarbGlucoseChart(data, containerId, options) {
       glucoseSpike: value,
     };
   });
-  console.log(data)
-  console.log(typeof(data))
-  console.log(Object.entries(data))
+  console.log(data);
+  console.log(typeof data);
+  console.log(Object.entries(data));
 
   // Color scale
   const colorScale = d3
@@ -208,19 +208,33 @@ function createCarbGlucoseChart(data, containerId, options) {
 
 // Create the chart
 
-
+function compareRanges(rangeStr) {
+  // Assumes that rangeStr is a string with either a hyphen or a +.
+  // Returns integer representing sorted order
+  if (rangeStr.slice(-1) === "+") {
+    return +rangeStr.slice(0, -1);
+  }
+  splitStr = rangeStr.split('-');
+  if (splitStr.length === 2) {
+    return +splitStr[0]
+  }
+  else {
+    throw new Error('compareRanges(): Range string could not be sorted.')
+  }
+}
 
 async function createPlot(filePath) {
-  const data = await parse_csv(filePath);
+  let data = await parse_csv(filePath);
+  const sortedData = new Map(
+    [...data.entries()]
+    .sort(([rangeA], [rangeB]) => rangeA - rangeB)
+  )
   const options = {
     title: "Carbohydrate Impact on Glucose Levels",
     subtitle: "Average glucose spike by carbohydrate range",
     xAxisLabel: "Carbohydrate Range (grams)",
     yAxisLabel: "Glucose Spike (mg/dL)",
   };
-  createCarbGlucoseChart(data, "chart", options);
-
+  createCarbGlucoseChart(sortedData, "chart", options);
 }
-await createPlot("glucose_spikes.csv")
-
-
+await createPlot("glucose_spikes.csv");
