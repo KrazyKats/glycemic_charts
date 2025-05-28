@@ -107,7 +107,7 @@ function createCarbGlucoseChart(data, containerId, options) {
     .attr("class", "chart-title")
     .attr("x", (width + margin.left + margin.right) / 2)
     .attr("y", 30)
-    .text(options.title);
+    .text(options.title)
 
   // Add subtitle
   svg
@@ -173,14 +173,13 @@ function createCarbGlucoseChart(data, containerId, options) {
     });
 
   // Add legend
-  const legend = svg
-    .append("g")
-    .attr("class", "legend")
-    .attr(
-      "transform",
-      `translate(${width + margin.left + 20}, ${margin.top + 20})`
-    );
-
+  // const legend = svg
+  //   .append("g")
+  //   .attr("class", "legend")
+  //   .attr(
+  //     "transform",
+  //     `translate(${width + margin.left + 20}, ${margin.top + 20})`
+  //   );
   // const legendItems = legend
   //   .selectAll(".legend-item")
   //   .data(processedData)
@@ -227,10 +226,10 @@ async function createPlot(filePath) {
   );
   console.log(sortedData);
   const options = {
-    title: "Carbohydrate Impact on Glucose Levels",
-    subtitle: "Average glucose spike by carbohydrate range",
+    title: "How Quickly Does Blood Sugar Stabilize",
+    subtitle: "Difference Between Highest Glucose Spike After Meal and Glucose Levels 2 hours after meal",
     xAxisLabel: "Carbohydrate Range (grams)",
-    yAxisLabel: "Glucose Spike (mg/dL)",
+    yAxisLabel: "Glucose Change (mg/dL)",
   };
   createCarbGlucoseChart(sortedData, "chart", options);
 }
