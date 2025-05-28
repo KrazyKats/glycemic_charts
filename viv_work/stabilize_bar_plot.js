@@ -36,25 +36,7 @@ async function loadCSVData(filePath) {
   }
 }
 
-async function parse_csv(fp, carbBins, proteinBins, carbLabels, proteinLabels) {
-  console.log("stabilize bar plot called!");
-  if (carbBins === undefined) {
-    carbBins = [75, 50, 35, 20, 10, 0];
-  }
-  if (proteinBins === undefined) {
-    proteinBins = [40, 25, 15, 10, 3, 0];
-  }
-  if (carbLabels === undefined) {
-    carbLabels = ["75+", "50-75", "35-50", "20-35", "10-20", "0-10"];
-  }
-  if (proteinLabels === undefined) {
-    proteinLabels = ["40+", "25-40", "15-25", "10-15", "3-10", "0-3"];
-  }
-  const data = await loadCSVData(fp);
-  return bin_data(data, carbBins, carbLabels, "total_carb");
-}
-
-function createCarbGlucoseChart(data, containerId, options) {
+function createStabilizationChart(data, containerId, options) {
   // Clear existing chart
   d3.select(`#${containerId}`).selectAll("*").remove();
 
@@ -86,8 +68,8 @@ function createCarbGlucoseChart(data, containerId, options) {
   // Color scale
   const colorScale = d3
     .scaleSequential()
-    .domain([0, d3.max(processedData, d => d.glucoseSpike)])
-    .interpolator(d3.interpolateBlues);
+    .domain([0, d3.max(processedData, (d) => d.glucoseSpike)])
+    .interpolator(d3[options.interpolator]);
 
   // Scales
   const xScale = d3
@@ -107,7 +89,7 @@ function createCarbGlucoseChart(data, containerId, options) {
     .attr("class", "chart-title")
     .attr("x", (width + margin.left + margin.right) / 2)
     .attr("y", 30)
-    .text(options.title)
+    .text(options.title);
 
   // Add subtitle
   svg
@@ -218,19 +200,48 @@ function compareRanges(rangeStr) {
 }
 
 async function createPlot(filePath) {
-  let data = await parse_csv(filePath);
-  const sortedData = new Map(
-    [...data.entries()].sort(
+  // Make sure bins are sorted in descending order
+  const carbBins = [75, 50, 35, 20, 10, 0];
+  const proteinBins = [40, 25, 15, 10, 3, 0];
+  const carbLabels = ["75+", "50-75", "35-50", "20-35", "10-20", "0-10"];
+  const proteinLabels = ["40+", "25-40", "15-25", "10-15", "3-10", "0-3"];
+
+  let data = await loadCSVData(filePath);
+  let carbDataBinned = bin_data(data, carbBins, carbLabels, "total_carb");
+  let proteinDataBinned = bin_data(data, proteinBins, proteinLabels, "protein");
+
+  const sortedCarbBins = new Map(
+    [...carbDataBinned.entries()].sort(
       ([rangeA], [rangeB]) => compareRanges(rangeA) - compareRanges(rangeB)
     )
   );
-  console.log(sortedData);
-  const options = {
-    title: "How Quickly Does Blood Sugar Stabilize",
-    subtitle: "Difference Between Highest Glucose Spike After Meal and Glucose Levels 2 hours after meal",
+  const sortedProteinBins = new Map(
+    [...proteinDataBinned.entries()].sort(
+      ([rangeA], [rangeB]) => compareRanges(rangeA) - compareRanges(rangeB)
+    )
+  );
+  const carbOptions = {
+    title: "How Quickly Does Blood Sugar Stabilize with Carbohydrates?",
+    subtitle:
+      "Difference Between Highest Glucose Spike After Meal and Glucose Levels 2 hours after meal",
     xAxisLabel: "Carbohydrate Range (grams)",
     yAxisLabel: "Glucose Change (mg/dL)",
+    interpolator: "interpolateOranges",
   };
-  createCarbGlucoseChart(sortedData, "chart", options);
+  const proteinOptions = {
+    title: "How Quickly Does Blood Sugar Stabilize with Proteins?",
+    subtitle:
+      "Difference Between Highest Glucose Spike After Meal and Glucose Levels 2 hours after meal",
+    xAxisLabel: "Protein Range (grams)",
+    yAxisLabel: "Glucose Change (mg/dL)",
+    interpolator: "interpolateBlues",
+  };
+  // createStabilizationChart(proteinDataBinned, "chart", proteinOptions);
+  createStabilizationChart(carbDataBinned, "chart", carbOptions);
 }
 await createPlot("glucose_spikes.csv");
+
+/* I really want to refactor the logic to allow the creation of both plots
+1. Allow to take in an interpolator
+2. 
+*/
