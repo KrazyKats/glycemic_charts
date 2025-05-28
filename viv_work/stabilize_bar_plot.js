@@ -236,8 +236,8 @@ async function createPlot(filePath) {
     yAxisLabel: "Glucose Change (mg/dL)",
     interpolator: "interpolateBlues",
   };
-  // createStabilizationChart(proteinDataBinned, "chart", proteinOptions);
-  createStabilizationChart(carbDataBinned, "chart", carbOptions);
+  // createStabilizationChart(sortedProteinBins, "stabilize_chart", proteinOptions);
+  createStabilizationChart(sortedCarbBins, "stabilize_chart", carbOptions);
 }
 await createPlot("glucose_spikes.csv");
 
