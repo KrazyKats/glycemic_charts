@@ -1,7 +1,7 @@
 // intro.js 
 
 /** INTRO TIME SERIES PLOT **/
-d3.json("data/glucose_intro_traces.json").then(data => {
+d3.json("website_data/glucose_intro_traces.json").then(data => {
   const spikey = data.spikey;
   const flat = data.flat;
 
@@ -88,7 +88,7 @@ function drawGlucoseLines(spikey, flat) {
   });
 
   // === Tooltip interaction per line ===
-  const tooltip = d3.select("#tooltip");
+  const tooltip = d3.select("#intro-tooltip");
   const bisect = d3.bisector(d => d.minutes).left;
 
   function attachTooltip(path, data, color, label) {
