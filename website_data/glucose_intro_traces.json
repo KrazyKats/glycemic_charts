@@ -1,0 +1,246 @@
+{
+  "spikey": [
+    {
+      "minutes": -25.92,
+      "glucose": 95
+    },
+    {
+      "minutes": -20.92,
+      "glucose": 97
+    },
+    {
+      "minutes": -15.92,
+      "glucose": 97
+    },
+    {
+      "minutes": -10.92,
+      "glucose": 97
+    },
+    {
+      "minutes": -5.92,
+      "glucose": 96
+    },
+    {
+      "minutes": -0.92,
+      "glucose": 92
+    },
+    {
+      "minutes": 4.08,
+      "glucose": 89
+    },
+    {
+      "minutes": 9.08,
+      "glucose": 88
+    },
+    {
+      "minutes": 14.08,
+      "glucose": 91
+    },
+    {
+      "minutes": 19.07,
+      "glucose": 95
+    },
+    {
+      "minutes": 24.07,
+      "glucose": 99
+    },
+    {
+      "minutes": 29.07,
+      "glucose": 106
+    },
+    {
+      "minutes": 34.07,
+      "glucose": 113
+    },
+    {
+      "minutes": 39.08,
+      "glucose": 118
+    },
+    {
+      "minutes": 44.07,
+      "glucose": 121
+    },
+    {
+      "minutes": 49.07,
+      "glucose": 127
+    },
+    {
+      "minutes": 54.07,
+      "glucose": 140
+    },
+    {
+      "minutes": 59.07,
+      "glucose": 160
+    },
+    {
+      "minutes": 64.07,
+      "glucose": 180
+    },
+    {
+      "minutes": 69.07,
+      "glucose": 201
+    },
+    {
+      "minutes": 74.07,
+      "glucose": 220
+    },
+    {
+      "minutes": 79.05,
+      "glucose": 240
+    },
+    {
+      "minutes": 84.05,
+      "glucose": 251
+    },
+    {
+      "minutes": 89.05,
+      "glucose": 254
+    },
+    {
+      "minutes": 94.05,
+      "glucose": 256
+    },
+    {
+      "minutes": 99.05,
+      "glucose": 258
+    },
+    {
+      "minutes": 104.05,
+      "glucose": 261
+    },
+    {
+      "minutes": 109.05,
+      "glucose": 260
+    },
+    {
+      "minutes": 114.05,
+      "glucose": 257
+    },
+    {
+      "minutes": 119.05,
+      "glucose": 249
+    }
+  ],
+  "flat": [
+    {
+      "minutes": -27.87,
+      "glucose": 138
+    },
+    {
+      "minutes": -22.88,
+      "glucose": 130
+    },
+    {
+      "minutes": -17.87,
+      "glucose": 128
+    },
+    {
+      "minutes": -12.87,
+      "glucose": 127
+    },
+    {
+      "minutes": -7.87,
+      "glucose": 122
+    },
+    {
+      "minutes": -2.87,
+      "glucose": 112
+    },
+    {
+      "minutes": 2.13,
+      "glucose": 102
+    },
+    {
+      "minutes": 7.13,
+      "glucose": 95
+    },
+    {
+      "minutes": 12.15,
+      "glucose": 93
+    },
+    {
+      "minutes": 17.13,
+      "glucose": 92
+    },
+    {
+      "minutes": 22.12,
+      "glucose": 89
+    },
+    {
+      "minutes": 27.12,
+      "glucose": 84
+    },
+    {
+      "minutes": 32.12,
+      "glucose": 79
+    },
+    {
+      "minutes": 37.12,
+      "glucose": 77
+    },
+    {
+      "minutes": 42.12,
+      "glucose": 77
+    },
+    {
+      "minutes": 47.12,
+      "glucose": 78
+    },
+    {
+      "minutes": 52.12,
+      "glucose": 79
+    },
+    {
+      "minutes": 57.12,
+      "glucose": 81
+    },
+    {
+      "minutes": 62.12,
+      "glucose": 83
+    },
+    {
+      "minutes": 67.12,
+      "glucose": 84
+    },
+    {
+      "minutes": 72.12,
+      "glucose": 86
+    },
+    {
+      "minutes": 77.12,
+      "glucose": 89
+    },
+    {
+      "minutes": 82.12,
+      "glucose": 91
+    },
+    {
+      "minutes": 87.13,
+      "glucose": 92
+    },
+    {
+      "minutes": 92.15,
+      "glucose": 92
+    },
+    {
+      "minutes": 97.15,
+      "glucose": 91
+    },
+    {
+      "minutes": 102.13,
+      "glucose": 90
+    },
+    {
+      "minutes": 107.13,
+      "glucose": 90
+    },
+    {
+      "minutes": 112.15,
+      "glucose": 91
+    },
+    {
+      "minutes": 117.15,
+      "glucose": 91
+    }
+  ]
+}
