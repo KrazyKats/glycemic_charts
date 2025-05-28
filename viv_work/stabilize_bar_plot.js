@@ -83,22 +83,18 @@ function createCarbGlucoseChart(data, containerId, options) {
       glucoseSpike: value,
     };
   });
-  console.log(data);
-  console.log(typeof data);
-  console.log(Object.entries(data));
-
   // Color scale
   const colorScale = d3
-    .scaleOrdinal()
-    .domain(processedData.map((d) => d.carbRange))
-    .range(d3.schemeSet3);
+    .scaleSequential()
+    .domain([0, d3.max(processedData, d => d.glucoseSpike)])
+    .interpolator(d3.interpolateBlues);
 
   // Scales
   const xScale = d3
     .scaleBand()
     .domain(processedData.map((d) => d.carbRange))
     .range([0, width])
-    .padding(0.2);
+    .padding(0.1);
 
   const yScale = d3
     .scaleLinear()
@@ -158,7 +154,7 @@ function createCarbGlucoseChart(data, containerId, options) {
     .attr("width", xScale.bandwidth())
     .attr("y", (d) => yScale(d.glucoseSpike))
     .attr("height", (d) => height - yScale(d.glucoseSpike))
-    .attr("fill", (d) => colorScale(d.carbRange))
+    .attr("fill", (d) => colorScale(d.glucoseSpike))
     .on("mouseover", function (event, d) {
       tooltip.transition().duration(200).style("opacity", 1);
       tooltip
@@ -185,25 +181,25 @@ function createCarbGlucoseChart(data, containerId, options) {
       `translate(${width + margin.left + 20}, ${margin.top + 20})`
     );
 
-  const legendItems = legend
-    .selectAll(".legend-item")
-    .data(processedData)
-    .enter()
-    .append("g")
-    .attr("class", "legend-item")
-    .attr("transform", (d, i) => `translate(0, ${i * 25})`);
+  // const legendItems = legend
+  //   .selectAll(".legend-item")
+  //   .data(processedData)
+  //   .enter()
+  //   .append("g")
+  //   .attr("class", "legend-item")
+  //   .attr("transform", (d, i) => `translate(0, ${i * 25})`);
 
-  legendItems
-    .append("rect")
-    .attr("width", 15)
-    .attr("height", 15)
-    .attr("fill", (d) => colorScale(d.carbRange));
+  // legendItems
+  //   .append("rect")
+  //   .attr("width", 15)
+  //   .attr("height", 15)
+  //   .attr("fill", (d) => colorScale(d.glucoseSpike));
 
-  legendItems
-    .append("text")
-    .attr("x", 20)
-    .attr("y", 12)
-    .text((d) => `${d.id}: ${d.carbRange}g`);
+  // legendItems
+  //   .append("text")
+  //   .attr("x", 20)
+  //   .attr("y", 12)
+  //   .text((d) => `${d.id}: ${d.carbRange}g`);
 }
 
 // Create the chart
@@ -214,21 +210,22 @@ function compareRanges(rangeStr) {
   if (rangeStr.slice(-1) === "+") {
     return +rangeStr.slice(0, -1);
   }
-  splitStr = rangeStr.split('-');
+  const splitStr = rangeStr.split("-");
   if (splitStr.length === 2) {
-    return +splitStr[0]
-  }
-  else {
-    throw new Error('compareRanges(): Range string could not be sorted.')
+    return +splitStr[0];
+  } else {
+    throw new Error("compareRanges(): Range string could not be sorted.");
   }
 }
 
 async function createPlot(filePath) {
   let data = await parse_csv(filePath);
   const sortedData = new Map(
-    [...data.entries()]
-    .sort(([rangeA], [rangeB]) => rangeA - rangeB)
-  )
+    [...data.entries()].sort(
+      ([rangeA], [rangeB]) => compareRanges(rangeA) - compareRanges(rangeB)
+    )
+  );
+  console.log(sortedData);
   const options = {
     title: "Carbohydrate Impact on Glucose Levels",
     subtitle: "Average glucose spike by carbohydrate range",
