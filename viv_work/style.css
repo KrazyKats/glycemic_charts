@@ -1,77 +1,68 @@
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 20px;
-            background: #f8f9fa;
-        }
-        
-        .chart-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .chart-title {
-            font-size: 24px;
-            font-weight: bold;
-            text-anchor: middle;
-            fill: #2c3e50;
-        }
-        
-        .chart-subtitle {
-            font-size: 14px;
-            text-anchor: middle;
-            fill: #7f8c8d;
-        }
-        
-        .axis-label {
-            font-size: 14px;
-            fill: #34495e;
-        }
-        
-        .bar {
-            transition: all 0.3s ease;
-        }
-        
-        .bar:hover {
-            opacity: 0.8;
-            stroke: #2c3e50;
-            stroke-width: 2px;
-        }
-        
-        .tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 14px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .legend {
-            font-size: 12px;
-        }
-        
-        .legend-item {
-            cursor: default;
-        }
-        
-        .tick text {
-            font-size: 12px;
-            fill: #555;
-        }
-        
-        .domain {
-            stroke: #ddd;
-        }
-        
-        .tick line {
-            stroke: #ddd;
-        }
-    </style>
+body .stabilize {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 20px;
+  background: #f8f9fa;
+}
+
+.stabilize {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.stabilize .chart-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-anchor: middle;
+  fill: #2c3e50;
+}
+
+.stabilize .chart-subtitle {
+  font-size: 14px;
+  text-anchor: middle;
+  fill: #7f8c8d;
+}
+
+.stabilize .axis-label {
+  font-size: 14px;
+  fill: #34495e;
+}
+
+.stabilize .bar {
+  transition: all 0.3s ease;
+}
+
+.stabilize .bar:hover {
+  opacity: 0.8;
+  stroke: #2c3e50;
+  stroke-width: 2px;
+}
+
+.stabilize .tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+.stabilize.tick text {
+  font-size: 12px;
+  fill: #555;
+}
+
+.stabilize .domain {
+  stroke: #ddd;
+}
+
+.stabilize .tick line {
+  stroke: #ddd;
+}

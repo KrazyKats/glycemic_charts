@@ -46,7 +46,10 @@ function createStabilizationChart(data, containerId, options) {
   const height = 500 - margin.top - margin.bottom;
 
   // Create tooltip
-  const tooltip = d3.select("body").append("div").attr("class", "tooltip");
+  const tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip");
 
   // Create SVG
   const svg = d3
@@ -153,37 +156,7 @@ function createStabilizationChart(data, containerId, options) {
     .on("mouseout", function () {
       tooltip.transition().duration(200).style("opacity", 0);
     });
-
-  // Add legend
-  // const legend = svg
-  //   .append("g")
-  //   .attr("class", "legend")
-  //   .attr(
-  //     "transform",
-  //     `translate(${width + margin.left + 20}, ${margin.top + 20})`
-  //   );
-  // const legendItems = legend
-  //   .selectAll(".legend-item")
-  //   .data(processedData)
-  //   .enter()
-  //   .append("g")
-  //   .attr("class", "legend-item")
-  //   .attr("transform", (d, i) => `translate(0, ${i * 25})`);
-
-  // legendItems
-  //   .append("rect")
-  //   .attr("width", 15)
-  //   .attr("height", 15)
-  //   .attr("fill", (d) => colorScale(d.glucoseSpike));
-
-  // legendItems
-  //   .append("text")
-  //   .attr("x", 20)
-  //   .attr("y", 12)
-  //   .text((d) => `${d.id}: ${d.carbRange}g`);
 }
-
-// Create the chart
 
 function compareRanges(rangeStr) {
   // Assumes that rangeStr is a string with either a hyphen or a +.
