@@ -4,12 +4,12 @@ Perhaps have optional parameters for the bins of carbs, proteins, etc.
 By default, use the bins that I'm currently using
 
 Function two -- create_bar_plot(): Uses d3 to create the bar plots for proteins and carbs
-I can share mos t of the logic of these two functions
+I can share most of the logic of these two functions
  */
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm";
 function bin_data(data, bins, labels, bin_by) {
   // Output an object mapping bin to average stabilize value
-  // In order to compute the average by category, I can compute a sum and a count
+
   function get_bin_label(value) {
     // Assume bins are sorted in descending order by amounts and no values are lower than smallest bin
     for (const [index, bin] of bins.entries()) {
