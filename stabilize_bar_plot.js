@@ -1,4 +1,4 @@
-// Creates Bar Plots for Stabilization 
+// Creates Bar Plots for Stabilization
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm";
 function bin_data(data, bins, labels, bin_by) {
   // Output an object mapping bin to average stabilize value
@@ -12,7 +12,7 @@ function bin_data(data, bins, labels, bin_by) {
   }
   const groupedData = d3.rollup(
     data,
-    (v) => d3.mean(v, (d) => d.stabilize),
+    (v) => d3.mean(v, (d) => -d.stabilize),
     (d) => get_bin_label(d[bin_by])
   );
   return groupedData;
@@ -50,6 +50,7 @@ function createStabilizationChart(data, containerId, options) {
   const g = svg
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
+
   const processedData = [...data.entries()].map(([key, value]) => {
     return {
       id: key,
@@ -57,31 +58,26 @@ function createStabilizationChart(data, containerId, options) {
       glucoseSpike: value,
     };
   });
-  // Color scale
+
+  // Color scale - using absolute values for color intensity
   const colorScale = d3
     .scaleSequential()
-    .domain([0, d3.max(processedData, (d) => d.glucoseSpike)])
+    .domain([0, d3.max(processedData, (d) => Math.abs(d.glucoseSpike))])
     .interpolator(d3[options.interpolator]);
 
-  // Scales
+  // Scales - KEY CHANGE: Set domain to include negative values
   const xScale = d3
     .scaleBand()
     .domain(processedData.map((d) => d.carbRange))
     .range([0, width])
     .padding(0.1);
 
+  // Updated Y scale for negative values
+  const minValue = d3.min(processedData, (d) => d.glucoseSpike);
   const yScale = d3
     .scaleLinear()
-    .domain([0, d3.max(processedData, (d) => d.glucoseSpike) * 1.1])
-    .range([height, 0]);
-
-  // Add title
-  // svg
-  //   .append("text")
-  //   .attr("class", "chart-title")
-  //   .attr("x", (width + margin.left + margin.right) / 2)
-  //   .attr("y", 30)
-  //   .text(options.title);
+    .domain([minValue * 1.1, 0]) // Start from negative value, end at 0
+    .range([height, 0]); // This maps the most negative value to bottom of chart
 
   // Add subtitle
   svg
@@ -98,6 +94,16 @@ function createStabilizationChart(data, containerId, options) {
 
   // Add Y axis
   g.append("g").call(d3.axisLeft(yScale));
+
+  // Add zero line for reference
+  g.append("line")
+    .attr("x1", 0)
+    .attr("x2", width)
+    .attr("y1", yScale(0))
+    .attr("y2", yScale(0))
+    .attr("stroke", "#666")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "3,3");
 
   // Add X axis label
   svg
@@ -118,7 +124,7 @@ function createStabilizationChart(data, containerId, options) {
     .attr("y", 20)
     .text(options.yAxisLabel);
 
-  // Add bars
+  // Add bars - KEY CHANGE: Bars now extend from zero line down to the value
   g.selectAll(".bar")
     .data(processedData)
     .enter()
@@ -126,16 +132,16 @@ function createStabilizationChart(data, containerId, options) {
     .attr("class", "bar")
     .attr("x", (d) => xScale(d.carbRange))
     .attr("width", xScale.bandwidth())
-    .attr("y", (d) => yScale(d.glucoseSpike))
-    .attr("height", (d) => height - yScale(d.glucoseSpike))
-    .attr("fill", (d) => colorScale(d.glucoseSpike))
+    .attr("y", yScale(0)) // Start at the zero line
+    .attr("height", (d) => yScale(d.glucoseSpike) - yScale(0)) // Height from zero to the value
+    .attr("fill", (d) => colorScale(Math.abs(d.glucoseSpike))) // Use absolute value for color
     .on("mouseover", function (event, d) {
       tooltip.transition().duration(200).style("opacity", 1);
       tooltip
         .html(
           `<strong>${
             d.carbRange
-          }g carbs</strong><br/>Glucose spike: ${Math.round(
+          }g carbs</strong><br/>Glucose change: ${Math.round(
             d.glucoseSpike
           )} mg/dL`
         )
@@ -146,8 +152,6 @@ function createStabilizationChart(data, containerId, options) {
       tooltip.transition().duration(200).style("opacity", 0);
     });
 }
-
-
 
 function compareRanges(rangeStr) {
   // Assumes that rangeStr is a string with either a hyphen or a +.
@@ -165,11 +169,15 @@ function compareRanges(rangeStr) {
 
 async function createPlot(filePath) {
   // Make sure bins are sorted in descending order
-  const carbBins = [75, 50, 35, 20, 10, 0];
-  const proteinBins = [40, 25, 15, 10, 3, 0];
-  const carbLabels = ["75+", "50-75", "35-50", "20-35", "10-20", "0-10"];
-  const proteinLabels = ["40+", "25-40", "15-25", "10-15", "3-10", "0-3"];
+  // const carbBins = [75, 50, 35, 20, 10, 0];
+  // const proteinBins = [40, 25, 15, 10, 3, 0];
+  // const carbLabels = ["75+", "50-75", "35-50", "20-35", "10-20", "0-10"];
+  // const proteinLabels = ["40+", "25-40", "15-25", "10-15", "3-10", "0-3"];
 
+  const carbBins = [20, 0];
+  const proteinBins = [15, 0];
+  const carbLabels = ["20+", "0-20"];
+  const proteinLabels = ["15+", "0-15"];
   let data = await loadCSVData(filePath);
   let carbDataBinned = bin_data(data, carbBins, carbLabels, "total_carb");
   let proteinDataBinned = bin_data(data, proteinBins, proteinLabels, "protein");
@@ -200,8 +208,11 @@ async function createPlot(filePath) {
     yAxisLabel: "Glucose Change (mg/dL)",
     interpolator: "interpolateBlues",
   };
-  createStabilizationChart(sortedProteinBins, "protein_stabilize_chart", proteinOptions);
-  // createStabilizationChart(sortedCarbBins, "carb_stabilize_chart", carbOptions);
+  createStabilizationChart(
+    sortedProteinBins,
+    "protein_stabilize_chart",
+    proteinOptions
+  );
+  createStabilizationChart(sortedCarbBins, "carb_stabilize_chart", carbOptions);
 }
 await createPlot("viv_work/glucose_spikes.csv");
-
