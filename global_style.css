@@ -38,16 +38,16 @@ section {
   padding: 1.5rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 
-  /* Animation styles */
+  /* Animation styles
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out; */
 }
 
-section.visible {
+/* section.visible {
   opacity: 1;
   transform: translateY(0);
-}
+} */
 
 section h2 {
   font-size: 1.5rem;
@@ -55,7 +55,7 @@ section h2 {
   color: #2c3e50;
 }
 
-.chart-container {
+/* .chart-container {
   width: 100%;
   height: 400px;
   background-color: #eef2f7;
@@ -67,4 +67,226 @@ section h2 {
   justify-content: center;
   color: #7f8c8d;
   font-size: 1.1rem;
+} */
+
+
+.section-heading {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+svg {
+  background-color: white;
+  border: 1px solid #ccc;
+  margin: 10px auto;
+  display: block;
+  min-height: 400px;
+}
+
+.bar {
+  fill: steelblue;
+  transition: fill 0.2s;
+}
+
+.bar:hover {
+  fill: darkorange;
+}
+
+.chart-section {
+  margin: 40px auto;
+  max-width: 900px;
+
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* AND Prototype Styling */
+
+text {
+  font-size: 14px;
+}
+
+footer {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-top: 50px;
+}
+
+.chart-legend-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px auto;
+  max-width: 1300px;
+  flex-wrap: wrap;
+}
+
+
+.intro-chart {
+  flex: 1;
+  min-width: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+.legend-section {
+  flex: 0 0 260px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-family: sans-serif;
+}
+
+.legend-title {
+  font-size: 18px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 4px;
+}
+
+.legend-entry {
+  margin-bottom: 20px;
+}
+
+.legend-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.legend-participant {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.red-dot {
+  background-color: red;
+}
+
+.blue-dot {
+  background-color: steelblue;
+}
+
+.meal-card {
+  background-color: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 6px;
+  font-size: 14px;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.03);
+}
+
+
+.meal-card div {
+  font-weight: 500;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #333;
+}
+
+.meal-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.meal-card li {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+#replay-button {
+  margin-top: 10px;
+  padding: 6px 12px;
+  font-size: 14px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  border-radius: 4px;
+  display: block;
+  margin: 20px auto 0 auto;
+}
+
+#replay-button:hover {
+  background-color: #f0f0f0;
+}
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  color: #333;
+  line-height: 1.4em;
+  z-index: 10;
+}
+
+.intro-title {
+  font-size: 20px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.intro-description {
+  font-size: 14px;
+  color: #444;
+  margin-top: 18px;
+  line-height: 1.5;
+  text-align: left;
+
+  padding-left: 60px;
+  padding-right: 30px;
+}
+
+nav {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 32px;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f6fa;
+  padding: 16px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+nav a {
+  color: #2c3e50;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+nav a:hover,
+nav a.active {
+  background-color: #eaf1fb;
+  color: #1a73e8;
 }
