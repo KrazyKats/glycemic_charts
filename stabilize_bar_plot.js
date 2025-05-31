@@ -1,15 +1,7 @@
-/* Function one -- parse_csv(): takes in a CSV file and returns the data needed as an object
-I can allow filtering for this function if I want to
-Perhaps have optional parameters for the bins of carbs, proteins, etc.
-By default, use the bins that I'm currently using
-
-Function two -- create_bar_plot(): Uses d3 to create the bar plots for proteins and carbs
-I can share mos t of the logic of these two functions
- */
+// Creates Bar Plots for Stabilization 
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm";
 function bin_data(data, bins, labels, bin_by) {
   // Output an object mapping bin to average stabilize value
-  // In order to compute the average by category, I can compute a sum and a count
   function get_bin_label(value) {
     // Assume bins are sorted in descending order by amounts and no values are lower than smallest bin
     for (const [index, bin] of bins.entries()) {
@@ -41,7 +33,7 @@ function createStabilizationChart(data, containerId, options) {
   d3.select(`#${containerId}`).selectAll("*").remove();
 
   // Dimensions and margins
-  const margin = { top: 80, right: 150, bottom: 80, left: 80 };
+  const margin = { top: 50, right: 150, bottom: 80, left: 80 };
   const width = 800 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 
@@ -84,19 +76,19 @@ function createStabilizationChart(data, containerId, options) {
     .range([height, 0]);
 
   // Add title
-  svg
-    .append("text")
-    .attr("class", "chart-title")
-    .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", 30)
-    .text(options.title);
+  // svg
+  //   .append("text")
+  //   .attr("class", "chart-title")
+  //   .attr("x", (width + margin.left + margin.right) / 2)
+  //   .attr("y", 30)
+  //   .text(options.title);
 
   // Add subtitle
   svg
     .append("text")
     .attr("class", "chart-subtitle")
     .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", 55)
+    .attr("y", 30)
     .text(options.subtitle);
 
   // Add X axis
@@ -209,11 +201,7 @@ async function createPlot(filePath) {
     interpolator: "interpolateBlues",
   };
   createStabilizationChart(sortedProteinBins, "protein_stabilize_chart", proteinOptions);
-  createStabilizationChart(sortedCarbBins, "carb_stabilize_chart", carbOptions);
+  // createStabilizationChart(sortedCarbBins, "carb_stabilize_chart", carbOptions);
 }
 await createPlot("viv_work/glucose_spikes.csv");
 
-/* I really want to refactor the logic to allow the creation of both plots
-1. Allow to take in an interpolator
-2. 
-*/
