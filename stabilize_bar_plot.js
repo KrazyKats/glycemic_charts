@@ -12,7 +12,7 @@ function bin_data(data, bins, labels, bin_by) {
   }
   const groupedData = d3.rollup(
     data,
-    (v) => d3.mean(v, (d) => -d.stabilize),
+    (v) => d3.mean(v, (d) => -d["stabilize"]),
     (d) => get_bin_label(d[bin_by])
   );
   return groupedData;
@@ -26,6 +26,42 @@ async function loadCSVData(filePath) {
     console.error("Error loading CSV:", error);
     throw error;
   }
+}
+
+function wrapText(text, width) {
+  text.each(function () {
+    const text = d3.select(this);
+    const words = text.text().split(/\s+/).reverse();
+    let word;
+    let line = [];
+    let lineNumber = 0;
+    const lineHeight = 1.1; // ems
+    const y = text.attr("y");
+    const dy = 0;
+
+    let tspan = text
+      .text(null)
+      .append("tspan")
+      .attr("x", text.attr("x"))
+      .attr("y", y)
+      .attr("dy", dy + "em");
+
+    while ((word = words.pop())) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width && line.length > 1) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text
+          .append("tspan")
+          .attr("x", text.attr("x"))
+          .attr("y", y)
+          .attr("dy", ++lineNumber * lineHeight + dy + "em")
+          .text(word);
+      }
+    }
+  });
 }
 
 function createStabilizationChart(data, containerId, options) {
@@ -80,12 +116,13 @@ function createStabilizationChart(data, containerId, options) {
     .range([height, 0]); // This maps the most negative value to bottom of chart
 
   // Add subtitle
-  svg
+  let subtitle = svg
     .append("text")
     .attr("class", "chart-subtitle")
     .attr("x", (width + margin.left + margin.right) / 2)
     .attr("y", 30)
     .text(options.subtitle);
+  wrapText(subtitle, 600);
 
   // Add X axis
   g.append("g")
@@ -139,9 +176,9 @@ function createStabilizationChart(data, containerId, options) {
       tooltip.transition().duration(200).style("opacity", 1);
       tooltip
         .html(
-          `<strong>${
+          `<strong>Bin: </strong>${
             d.carbRange
-          }g carbs</strong><br/>Glucose change: ${Math.round(
+          }g<br/> <strong>Average Glucose Spike: </strong>${Math.round(
             d.glucoseSpike
           )} mg/dL`
         )
@@ -193,18 +230,16 @@ async function createPlot(filePath) {
     )
   );
   const carbOptions = {
-    title: "How Quickly Does Blood Sugar Stabilize with Carbohydrates?",
-    subtitle:
-      "Difference Between Highest Glucose Spike After Meal and Glucose Levels 2 hours after meal",
-    xAxisLabel: "Carbohydrate Range (grams)",
-    yAxisLabel: "Glucose Change (mg/dL)",
+    subtitle: `Observed Difference Between Highest Glucose Spike At Any Points 2 hours After Meal 
+      and Mean Glucose Levels 2-2.5 hours after meal.`,
+    xAxisLabel: "Carbohydrate Range (g)",
+    yAxisLabel: "Glucose Stabilization (mg/dL)",
     interpolator: "interpolateOranges",
   };
   const proteinOptions = {
-    title: "How Quickly Does Blood Sugar Stabilize with Proteins?",
-    subtitle:
-      "Difference Between Highest Glucose Spike After Meal and Glucose Levels 2 hours after meal",
-    xAxisLabel: "Protein Range (grams)",
+    subtitle: `Observed Difference Between Highest Glucose Spike At Any Points 2 hours After Meal
+      and Mean Glucose Levels 2-2.5 hours after meal.`,
+    xAxisLabel: "Protein Range (g)",
     yAxisLabel: "Glucose Change (mg/dL)",
     interpolator: "interpolateBlues",
   };

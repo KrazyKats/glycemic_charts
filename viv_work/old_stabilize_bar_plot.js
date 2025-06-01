@@ -36,6 +36,32 @@ async function loadCSVData(filePath) {
   }
 }
 
+function addSubtitle(svg, text, x, y) {
+  const lines = text.split("\n");
+
+  // If there are manual line breaks, use them
+  if (lines.length > 1) {
+    const subtitleGroup = svg
+      .append("text")
+      .attr("class", "chart-subtitle")
+      .attr("x", x)
+      .attr("y", y);
+
+    lines.forEach((line, i) => {
+      subtitleGroup
+        .append("tspan")
+        .attr("x", x)
+        .attr("dy", i === 0 ? 0 : "1.2em")
+        .text(line);
+    });
+    svg
+      .append("text")
+      .attr("class", "chart-subtitle")
+      .attr("x", (width + margin.left + margin.right) / 2)
+      .attr("y", y)
+      .text(options.subtitle);
+  }
+}
 function createStabilizationChart(data, containerId, options) {
   // Clear existing chart
   d3.select(`#${containerId}`).selectAll("*").remove();
@@ -46,10 +72,7 @@ function createStabilizationChart(data, containerId, options) {
   const height = 500 - margin.top - margin.bottom;
 
   // Create tooltip
-  const tooltip = d3
-    .select("body")
-    .append("div")
-    .attr("class", "tooltip");
+  const tooltip = d3.select("body").append("div").attr("class", "tooltip");
 
   // Create SVG
   const svg = d3
@@ -87,21 +110,27 @@ function createStabilizationChart(data, containerId, options) {
     .range([height, 0]);
 
   // Add title
-  svg
-    .append("text")
-    .attr("class", "chart-title")
-    .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", 30)
-    .text(options.title);
+  // svg
+  //   .append("text")
+  //   .attr("class", "chart-title")
+  //   .attr("x", (width + margin.left + margin.right) / 2)
+  //   .attr("y", 30)
+  //   .text(options.title);
 
   // Add subtitle
-  svg
-    .append("text")
-    .attr("class", "chart-subtitle")
-    .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", 55)
-    .text(options.subtitle);
+  // svg
+  //   .append("text")
+  //   .attr("class", "chart-subtitle")
+  //   .attr("x", (width + margin.left + margin.right) / 2)
+  //   .attr("y", 55)
+  //   .text(options.subtitle);
 
+  createSubtitle(
+    svg,
+    options.subtitle,
+    (width + margin.left + margin.right) / 2,
+    55
+  );
   // Add X axis
   g.append("g")
     .attr("transform", `translate(0,${height})`)
@@ -204,13 +233,13 @@ async function createPlot(filePath) {
   const proteinOptions = {
     title: "How Quickly Does Blood Sugar Stabilize with Proteins?",
     subtitle:
-      "Difference Between Highest Glucose Spike After Meal and Glucose Levels 2 hours after meal",
+      "Difference Between Highest Glucose Spike AfterMeal and Glucose Levels 2 hours after meal",
     xAxisLabel: "Protein Range (grams)",
     yAxisLabel: "Glucose Change (mg/dL)",
     interpolator: "interpolateBlues",
   };
   // createStabilizationChart(sortedProteinBins, "stabilize_chart", proteinOptions);
-  createStabilizationChart(sortedCarbBins, "stabilize_chart", carbOptions);
+  // createStabilizationChart(sortedCarbBins, "stabilize_chart", carbOptions);
 }
 await createPlot("glucose_spikes.csv");
 

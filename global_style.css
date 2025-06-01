@@ -84,13 +84,17 @@ svg {
   min-height: 400px;
 }
 
-.bar {
-  fill: steelblue;
+.protein-plot .bar {
+  fill: #2E86AB;
+  transition: fill 0.2s;
+}
+.carb-plot .bar {
+  fill: orange;
   transition: fill 0.2s;
 }
 
 .bar:hover {
-  fill: darkorange;
+  fill: green;
 }
 
 .chart-section {

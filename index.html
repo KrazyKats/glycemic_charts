@@ -5,7 +5,7 @@
     <title>Dashboard Overview</title>
     <link rel="stylesheet" href="global_style.css" />
     <link rel="stylesheet" href="stabilize_style.css" />
-  <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <script src="https://d3js.org/d3.v7.min.js"></script>
   </head>
   <body>
@@ -81,13 +81,15 @@
       <!-- For intro time series -->
       <div id="intro-tooltip" class="tooltip" style="opacity: 0"></div>
 
-      <section id="and-carb-chart" class="chart-section">
+      <section id="and-carb-chart" class="chart-section carb-plot">
         <h2>High Carb Meals Correlate With High Blood Sugar Spikes</h2>
         <svg></svg>
       </section>
 
-      <section id="and-protein-chart" class="chart-section">
-        <h2>High Protein Meals Have Less Pronounced Blood Sugar Spikes than Carbs</h2>
+      <section id="and-protein-chart" class="chart-section protein-plot">
+        <h2>
+          High Protein Meals Have Less Pronounced Blood Sugar Spikes than Carbs
+        </h2>
         <svg></svg>
       </section>
 
@@ -97,8 +99,8 @@
         <h2>IDIOT VILLE</h2>
         <div id="chart"></div>
       </section>
-      <section>
-        <h2>Chart 4: Comparative Metrics</h2>
+      <section class="carb-plot">
+        <h2>High Carbohydrate Meals Have Blood Sugar Rapidly Reduce After Peaking</h2>
         <div class="chart-container stabilize">
           <div id="carb_stabilize_chart"></div>
         </div>
@@ -106,8 +108,8 @@
         <p>This section compares multiple variables or groups in Chart 4.</p>
       </section>
 
-      <section>
-        <h2>Chart 5: Insights & Anomalies</h2>
+      <section class="protein-plot">
+        <h2>High Protein Meals Have Blood Sugar Reduce Slower After Peakings</h2>
         <div class="chart-container stabilize">
           <div id="protein_stabilize_chart"></div>
           <p>
@@ -139,7 +141,7 @@
     </script>
     <script src="and-bars.js"></script>
     <script src="intro.js"></script>
-  <script src="glucose-plot.js"></script>
+    <script src="glucose-plot.js"></script>
     <script src="stabilize_bar_plot.js" type="module"></script>
   </body>
 </html>
