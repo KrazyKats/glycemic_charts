@@ -290,3 +290,53 @@ nav a.active {
   background-color: #eaf1fb;
   color: #1a73e8;
 }
+
+/* Guessing game styling */
+
+.guessing-game {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 20px auto;
+  max-width: 1300px;
+  flex-wrap: nowrap;
+}
+
+.guess-left {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 0 0 340px;
+  min-width: 320px;
+}
+
+.guess-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+  min-width: 400px;
+}
+
+.instructions,
+.ranking {
+  width: 100%;
+}
+
+/* Optional: style guess-graph and guess-legend for better appearance */
+.guess-graph {
+  min-height: 220px;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.guess-legend {
+  min-height: 60px;
+  background: #f8fafc;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 10px;
+}

@@ -1,18 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<<<<<<< HEAD
-<head>
-  <meta charset="UTF-8">
-  <title>Dashboard Overview</title>
-  <link rel="stylesheet" href="global_style.css">
-  <script type="module" src="global.js"></script>
-</head>
-<body>
-  <header>
-    <h1>Project Dashboard</h1>
-    <p>A Visual Overview of Key Metrics and Trends</p>
-  </header>
-=======
   <head>
     <meta charset="UTF-8" />
     <title>Dashboard Overview</title>
@@ -20,13 +7,13 @@
     <link rel="stylesheet" href="stabilize_style.css" />
   <link rel="stylesheet" href="style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="guessing-game.js" type="module"></script>
   </head>
   <body>
     <header>
       <h1>Project Dashboard</h1>
       <p>A Visual Overview of Key Metrics and Trends</p>
     </header>
->>>>>>> origin/main
 
     <main>
       <nav>
@@ -53,7 +40,7 @@
           </p>
 
           <p class="intro-description">Let's explore that!</p>
-        </div>
+        </div> 
 
         <!-- Legend container -->
         <div class="legend-section">
@@ -89,6 +76,35 @@
           </div>
 
           <button id="replay-button">Replay Animation</button>
+        </div>
+      </section>
+
+      <!-- Section for guessing game -->
+      <section class="guessing-game">
+        <div class="guess-left">
+          <div class="instructions">
+            <p>
+              First, let's see how much you know about what causes glucose spikes.
+              Here are 3 different meals from our patients along with some relevant information.
+              Your task: rank who will have the highest glucose spike!
+            </p>
+          </div>
+          <div class="ranking">
+            <div class="rank-container">
+              <div class="rank-slot" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+              <div class="rank-slot" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+              <div class="rank-slot" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            </div>
+            <div class="rank-buttons">
+              <button class="draggable-button" draggable="true" ondragstart="drag(event)" id="item1">Option 1</button>
+              <button class="draggable-button" draggable="true" ondragstart="drag(event)" id="item2">Option 2</button>
+              <button class="draggable-button" draggable="true" ondragstart="drag(event)" id="item3">Option 3</button>
+            </div>
+          </div>
+        </div>
+        <div class="guess-right">
+          <div class="guess-graph"></div>
+          <div class="guess-legend"></div>
         </div>
       </section>
 
