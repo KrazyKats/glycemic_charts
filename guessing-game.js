@@ -54,6 +54,139 @@ while (randomMeals.length !== 3) {
     randomMeals.push(meal)
 }
 
-console.log(randomMeals);
+// Bind randomMeals to the buttons and update their HTML
+d3.selectAll('.draggable-button')
+  .data(randomMeals)
+  .html((d, i) => `Meal ${i+1} |
+                   Patient ID: ${motherJSON[d].ID}
+                   Gender: ${motherJSON[d].Gender}
+                   HbA1c Level: ${motherJSON[d].HbA1c}
+                   Carb content: ${motherJSON[d].total_carb}
+                   Protein content: ${motherJSON[d].protein}`); 
 
 
+
+// Function to plot glucose traces for multiple patients/meals
+async function plotGlucoseTraces(mealInfos) {
+  // mealInfos: [{patientId, mealTime}, ...]
+  // Load glucose readings once
+  
+  const glucoseData = await d3.csv('website_data/glucose_levels.csv', d => ({
+    Timestamp: new Date(d.Timestamp),
+    patient_id: +d.patient_id,
+    glucose_value: +d.glucose_value
+  }));
+
+  let temp = mealInfos;
+  mealInfos = [];
+
+  for (let index of temp) {
+    mealInfos.push({
+        patientId: motherJSON[index].ID,
+        mealTime: motherJSON[index].food_time
+    });
+  }
+
+  // Prepare traces for each meal
+  const traces = mealInfos.map(info => {
+    const mealDate = new Date(info.mealTime);
+    const start = new Date(mealDate.getTime() - 30 * 60 * 1000);
+    const end = new Date(mealDate.getTime() + 2 * 60 * 60 * 1000);
+    const trace = glucoseData.filter(d =>
+      d.patient_id === info.patientId &&
+      d.Timestamp >= start &&
+      d.Timestamp <= end
+    ).map(d => ({
+      ...d,
+      rel_min: (d.Timestamp - mealDate) / 60000
+    }));
+    return {trace, patientId: info.patientId, mealTime: info.mealTime};
+  });
+
+  // Flatten all glucose values for y-domain
+  const allGlucose = traces.flatMap(t => t.trace.map(d => d.glucose_value));
+  const yDomain = d3.extent(allGlucose);
+
+  // Set up SVG
+  const margin = {top: 20, right: 30, bottom: 40, left: 50};
+  const width = 400 - margin.left - margin.right;
+  const height = 250 - margin.top - margin.bottom;
+
+  d3.select('.guess-graph').selectAll('*').remove(); // Clear previous
+
+  const svg = d3.select('.guess-graph')
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+
+  // Scales
+  const x = d3.scaleLinear()
+    .domain([-30, 120])
+    .range([0, width]);
+  const y = d3.scaleLinear()
+    .domain(yDomain).nice()
+    .range([height, 0]);
+
+  // Axes
+  svg.append('g')
+    .attr('transform', `translate(0,${height})`)
+    .call(d3.axisBottom(x).ticks(6).tickFormat(d => `${d} min`));
+  svg.append('g')
+    .call(d3.axisLeft(y));
+
+  // Color scale
+  const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+  // Plot each trace
+  traces.forEach((t, i) => {
+    const line = d3.line()
+      .x(d => x(d.rel_min))
+      .y(d => y(d.glucose_value));
+
+    svg.append('path')
+      .datum(t.trace)
+      .attr('fill', 'none')
+      .attr('stroke', color(i))
+      .attr('stroke-width', 2)
+      .attr('d', line);
+
+    // Optional: add label at end of line
+    if (t.trace.length > 0) {
+      svg.append('text')
+        .attr('x', x(t.trace[t.trace.length - 1].rel_min) + 5)
+        .attr('y', y(t.trace[t.trace.length - 1].glucose_value))
+        .attr('fill', color(i))
+        .attr('font-size', 12)
+        .text(`Patient ${t.patientId}`);
+    }
+  });
+
+  // Labels
+  svg.append('text')
+    .attr('x', width / 2)
+    .attr('y', -8)
+    .attr('text-anchor', 'middle')
+    .text('Glucose Trace');
+  svg.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + 35)
+    .attr('text-anchor', 'middle')
+    .text('Minutes relative to meal');
+  svg.append('text')
+    .attr('transform', 'rotate(-90)')
+    .attr('x', -height / 2)
+    .attr('y', -35)
+    .attr('text-anchor', 'middle')
+    .text('Glucose (mg/dL)');
+}
+
+// Example usage:
+// plotGlucoseTraces([
+//   {patientId: 1, mealTime: '2020-02-13 18:00:00'},
+//   {patientId: 2, mealTime: '2020-02-14 12:00:00'},
+//   {patientId: 3, mealTime: '2020-02-15 08:00:00'}
+// ]);
+
+plotGlucoseTraces(randomMeals)
