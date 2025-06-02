@@ -6,6 +6,7 @@ let motherJSON;  // JSON file for all info
 let JSONlength;  // Length of JSON file to calculate random numbers
 let randomMeals = [];  // All the random meals we are considering
 let meal;  // Loop variable to make sure meals are unique
+let highestSpike; // Meal number corresponding to highest spike
 
 async function loadCSV() {
   let data;
@@ -54,21 +55,38 @@ while (randomMeals.length !== 3) {
     randomMeals.push(meal)
 }
 
+highestSpike = {};
+for (let i = 0; i < randomMeals.length; i++) {
+  highestSpike[`meal ${i+1}`] = motherJSON[randomMeals[i]].glucose_spike;
+}
+console.log(highestSpike);
+let maxKey = Object.keys(highestSpike).reduce((a, b) => 
+  highestSpike[a] > highestSpike[b] ? a : b
+);
+console.log(maxKey);
+
+
 // Bind randomMeals to the buttons and update their HTML
-d3.selectAll('.draggable-button')
+d3.selectAll('.option')
   .data(randomMeals)
   .html((d, i) => `Meal ${i+1} |
                    Patient ID: ${motherJSON[d].ID}
                    Gender: ${motherJSON[d].Gender}
                    HbA1c Level: ${motherJSON[d].HbA1c}
                    Carb content: ${motherJSON[d].total_carb}
-                   Protein content: ${motherJSON[d].protein}`); 
+                   Protein content: ${motherJSON[d].protein}`);  
 
+document.querySelectorAll('.option').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
+    this.classList.add('selected');
+  });
+});
 
 
 // Function to plot glucose traces for multiple patients/meals
 async function plotGlucoseTraces(mealInfos) {
-  // mealInfos: [{patientId, mealTime}, ...]
+  // mealInfos: [{patientId, mealTime}, ...] this is cap
   // Load glucose readings once
   
   const glucoseData = await d3.csv('website_data/glucose_levels.csv', d => ({
@@ -109,8 +127,8 @@ async function plotGlucoseTraces(mealInfos) {
 
   // Set up SVG
   const margin = {top: 20, right: 30, bottom: 40, left: 50};
-  const width = 400 - margin.left - margin.right;
-  const height = 250 - margin.top - margin.bottom;
+  const width = 800 - margin.left - margin.right;
+  const height = 400 - margin.top - margin.bottom;
 
   d3.select('.guess-graph').selectAll('*').remove(); // Clear previous
 
@@ -136,6 +154,16 @@ async function plotGlucoseTraces(mealInfos) {
   svg.append('g')
     .call(d3.axisLeft(y));
 
+  // Dotted line
+  svg.append('line')
+  .attr('x1', x(0))
+  .attr('x2', x(0))
+  .attr('y1', 0)
+  .attr('y2', height)
+  .attr('stroke', 'black')
+  .attr('stroke-width', 2)
+  .attr('stroke-dasharray', '4,4'); // Dotted line
+
   // Color scale
   const color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -151,17 +179,37 @@ async function plotGlucoseTraces(mealInfos) {
       .attr('stroke', color(i))
       .attr('stroke-width', 2)
       .attr('d', line);
-
-    // Optional: add label at end of line
-    if (t.trace.length > 0) {
-      svg.append('text')
-        .attr('x', x(t.trace[t.trace.length - 1].rel_min) + 5)
-        .attr('y', y(t.trace[t.trace.length - 1].glucose_value))
-        .attr('fill', color(i))
-        .attr('font-size', 12)
-        .text(`Patient ${t.patientId}`);
-    }
   });
+
+  // --- Legend ---
+d3.select('.guess-legend').selectAll('*').remove(); // Clear previous legend
+
+const legendEntryWidth = 220;
+const legendEntryHeight = 24;
+
+const legendSvg = d3.select('.guess-legend')
+  .append('svg')
+  .attr('width', traces.length * legendEntryWidth)
+  .attr('height', legendEntryHeight);
+
+const legend = legendSvg.selectAll('.legend-item')
+  .data(traces)
+  .enter()
+  .append('g')
+  .attr('class', 'legend-item')
+  .attr('transform', (d, i) => `translate(${i * legendEntryWidth + 10}, 2)`);
+
+legend.append('rect')
+  .attr('width', 20)
+  .attr('height', 20)
+  .attr('y', 0)
+  .attr('fill', (d, i) => color(i));
+
+legend.append('text')
+  .attr('x', 30)
+  .attr('y', 15) // Vertically center text with the rect
+  .attr('font-size', 14)
+  .text((d, i) => `Meal ${i+1}, Spike: ${motherJSON[temp[i]].glucose_spike}`);
 
   // Labels
   svg.append('text')
@@ -180,6 +228,7 @@ async function plotGlucoseTraces(mealInfos) {
     .attr('y', -35)
     .attr('text-anchor', 'middle')
     .text('Glucose (mg/dL)');
+
 }
 
 // Example usage:
@@ -189,4 +238,37 @@ async function plotGlucoseTraces(mealInfos) {
 //   {patientId: 3, mealTime: '2020-02-15 08:00:00'}
 // ]);
 
-plotGlucoseTraces(randomMeals)
+// plotGlucoseTraces(randomMeals)
+// document.getElementById('item4').addEventListener('click', function() {
+//   const selected = document.querySelector('.option.selected');
+//   if (selected) {
+//     // Call plotGlucoseTraces with only the selected meal
+//     plotGlucoseTraces(randomMeals);
+//   } else {
+//     alert('Please select a meal option before confirming.');
+//   }
+// });
+
+
+document.getElementById('item4').addEventListener('click', function() {
+  const selected = document.querySelector('.option.selected');
+  if (selected) {
+    // Find the index of the selected button (0, 1, or 2)
+    const selectedIndex = Array.from(document.querySelectorAll('.option')).indexOf(selected);
+
+    // Call plotGlucoseTraces with only the selected meal
+    plotGlucoseTraces(randomMeals);
+
+    // Check if selected button matches maxKey
+    const selectedMealKey = `meal ${selectedIndex + 1}`;
+    if (selectedMealKey === maxKey) {
+      // Correct selection
+      alert('Correct! You picked the meal with the highest glucose spike.');
+    } else {
+      // Incorrect selection
+      alert('Incorrect. Try again!');
+    }
+  } else {
+    alert('Please select a meal option before confirming.');
+  }
+});

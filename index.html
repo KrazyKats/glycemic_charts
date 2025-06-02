@@ -83,22 +83,17 @@
       <section class="guessing-game">
         <div class="guess-left">
           <div class="instructions">
-            <p>
+            <p class="text-instruct">
               First, let's see how much you know about what causes glucose spikes.
               Here are 3 different meals from our patients along with some relevant information.
               Your task: rank who will have the highest glucose spike!
             </p>
           </div>
           <div class="ranking">
-            <div class="rank-container">
-              <div class="rank-slot" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-              <div class="rank-slot" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-              <div class="rank-slot" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-            </div>
             <div class="rank-buttons">
-              <button class="draggable-button" draggable="true" ondragstart="drag(event)" id="item1">Option 1</button>
-              <button class="draggable-button" draggable="true" ondragstart="drag(event)" id="item2">Option 2</button>
-              <button class="draggable-button" draggable="true" ondragstart="drag(event)" id="item3">Option 3</button>
+              <button class="option" id="item1">a</button>
+              <button class="option" id="item2">b</button>
+              <button class="option"  id="item3">c</button>
               <button class="confirm-button" id="item4">Confirm</button>
             </div>
           </div>
@@ -106,6 +101,7 @@
         <div class="guess-right">
           <div class="guess-graph"></div>
           <div class="guess-legend"></div>
+          <div class="guess-explain"></div>
         </div>
       </section>
 
