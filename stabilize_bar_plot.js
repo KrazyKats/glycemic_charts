@@ -178,7 +178,7 @@ function createStabilizationChart(data, containerId, options) {
         .html(
           `<strong>Bin: </strong>${
             d.carbRange
-          }g<br/> <strong>Average Glucose Spike: </strong>${Math.round(
+          }g<br/> <strong>Glucose Stabilization Amount: </strong>${Math.round(
             d.glucoseSpike
           )} mg/dL`
         )
@@ -211,10 +211,10 @@ async function createPlot(filePath) {
   // const carbLabels = ["75+", "50-75", "35-50", "20-35", "10-20", "0-10"];
   // const proteinLabels = ["40+", "25-40", "15-25", "10-15", "3-10", "0-3"];
 
-  const carbBins = [20, 0];
-  const proteinBins = [15, 0];
-  const carbLabels = ["20+", "0-20"];
-  const proteinLabels = ["15+", "0-15"];
+  const carbBins = [25, 10, 0];
+  const proteinBins = [20, 10, 0];
+  const carbLabels = ["25+", "10-25", "0-10"];
+  const proteinLabels = ["20+", "10-20", "0-10"];
   let data = await loadCSVData(filePath);
   let carbDataBinned = bin_data(data, carbBins, carbLabels, "total_carb");
   let proteinDataBinned = bin_data(data, proteinBins, proteinLabels, "protein");
@@ -233,14 +233,14 @@ async function createPlot(filePath) {
     subtitle: `Observed Difference Between Highest Glucose Spike At Any Points 2 hours After Meal 
       and Mean Glucose Levels 2-2.5 hours after meal.`,
     xAxisLabel: "Carbohydrate Range (g)",
-    yAxisLabel: "Glucose Stabilization (mg/dL)",
+    yAxisLabel: "Glucose Stabilization Amount (mg/dL)",
     interpolator: "interpolateOranges",
   };
   const proteinOptions = {
     subtitle: `Observed Difference Between Highest Glucose Spike At Any Points 2 hours After Meal
       and Mean Glucose Levels 2-2.5 hours after meal.`,
     xAxisLabel: "Protein Range (g)",
-    yAxisLabel: "Glucose Change (mg/dL)",
+    yAxisLabel: "Glucose Stabilization Amount (mg/dL)",
     interpolator: "interpolateBlues",
   };
   createStabilizationChart(
