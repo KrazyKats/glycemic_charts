@@ -43,17 +43,6 @@ function drawBarChart(data, groupKey, valueKey, selector) {
   .range([0, width])
   .padding(0.1);
 
-  // const allProteinBins = ["0-3g", "3-10g", "10-15g", "15-25g", "25-40g", "40+g"];
-  // const allCarbBins = ["[0.0, 10.0)", "[10.0, 20.0)", "[20.0, 35.0)", "[35.0, 50.0)", "[50.0, 75.0)", "[75.0, inf)"];
-  // const allBins = groupKey === "protein_bin" ? allProteinBins : allCarbBins;
-
-  // const filteredBins = allBins.filter(bin => groupedData.some(d => d.key === bin));
-
-  // const x = d3.scaleBand()
-  //   .domain(filteredBins)
-  //   .range([0, width])
-
-
   const y = d3.scaleLinear()
     .domain([0, d3.max(groupedData, d => d.value)])
     .nice()
