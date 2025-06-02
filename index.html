@@ -1,145 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Dashboard Overview</title>
-    <link rel="stylesheet" href="global_style.css" />
-    <link rel="stylesheet" href="stabilize_style.css" />
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard Overview</title>
+  <link rel="stylesheet" href="interactive_style.css">
+  <link rel="stylesheet" href="global_style.css" />
+  <link rel="stylesheet" href="stabilize_style.css" />
   <link rel="stylesheet" href="style.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-  </head>
-  <body>
-    <header>
-      <h1>Project Dashboard</h1>
-      <p>A Visual Overview of Key Metrics and Trends</p>
-    </header>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
 
-    <main>
-      <nav>
-        <ul class="navbar">
-          <a href="./index.html">Dashboard</a>
-          <a href="./writeup.html">Writeup</a>
-          <a href="./about.html">About</a>
-        </ul>
-      </nav>
+<body>
+  <header>
+    <h1>Project Dashboard</h1>
+    <p>A Visual Overview of Key Metrics and Trends</p>
+  </header>
 
-      <section id="glucose-intro" class="chart-legend-container">
-        <!-- Chart container -->
-        <div class="intro-chart">
-          <h2 class="intro-title">Not All Meals Are Created Equal</h2>
+  <main>
+    <nav>
+      <ul class="navbar">
+        <a href="./index.html">Dashboard</a>
+        <a href="./writeup.html">Writeup</a>
+        <a href="./about.html">About</a>
+      </ul>
+    </nav>
 
-          <svg id="intro-viz"></svg>
+    <section id="glucose-intro" class="chart-legend-container">
+      <!-- Chart container -->
+      <div class="intro-chart">
+        <h2 class="intro-title">Not All Meals Are Created Equal</h2>
 
-          <p class="intro-description">
-            Some meals spike your blood sugar by a lot. Other meals, not so
-            much. It varies from person to person. And it varies based on a
-            bunch of factors. One particular (and perhaps intuitive) factor that
-            influences glucose response to a meal is its
-            <strong>macronutrient content</strong>.
-          </p>
+        <svg id="intro-viz"></svg>
 
-          <p class="intro-description">Let's explore that!</p>
+        <p class="intro-description">
+          Some meals spike your blood sugar by a lot. Other meals, not so
+          much. It varies from person to person. And it varies based on a
+          bunch of factors. One particular (and perhaps intuitive) factor that
+          influences glucose response to a meal is its
+          <strong>macronutrient content</strong>.
+        </p>
+
+        <p class="intro-description">Let's explore that!</p>
+      </div>
+
+      <!-- Legend container -->
+      <div class="legend-section">
+        <h3 class="legend-title">Legend</h3>
+
+        <div class="legend-entry">
+          <div class="legend-header">
+            <span class="legend-dot red-dot"></span>
+            <span class="legend-participant">Participant 12</span>
+          </div>
+          <div class="meal-card">
+            <div>Meal:</div>
+            <ul>
+              <li>🍗 Chicken Gyro</li>
+              <li>🍟 Fries</li>
+              <li>🥤 Diet Pepsi</li>
+            </ul>
+          </div>
         </div>
 
-        <!-- Legend container -->
-        <div class="legend-section">
-          <h3 class="legend-title">Legend</h3>
+        <div class="legend-entry">
+          <div class="legend-header">
+            <span class="legend-dot blue-dot"></span>
+            <span class="legend-participant">Participant 10</span>
+          </div>
+          <div class="meal-card">
+            <div>Meal:</div>
+            <ul>
+              <li>🥓 Bacon</li>
+              <li>🍳 Egg</li>
+            </ul>
+          </div>
+        </div>
 
-          <div class="legend-entry">
-            <div class="legend-header">
-              <span class="legend-dot red-dot"></span>
-              <span class="legend-participant">Participant 12</span>
-            </div>
-            <div class="meal-card">
-              <div>Meal:</div>
-              <ul>
-                <li>🍗 Chicken Gyro</li>
-                <li>🍟 Fries</li>
-                <li>🥤 Diet Pepsi</li>
-              </ul>
+        <button id="replay-button">Replay Animation</button>
+      </div>
+    </section>
+
+    <!-- For intro time series -->
+    <div id="intro-tooltip" class="tooltip" style="opacity: 0"></div>
+
+    <section id="and-carb-chart" class="chart-section">
+      <h2>Average Glucose Spike by Carb Bins</h2>
+      <svg></svg>
+    </section>
+
+    <section id="and-protein-chart" class="chart-section">
+      <h2>Average Glucose Spike by Protein Bins</h2>
+      <svg></svg>
+    </section>
+
+    <!-- For bar chart hover -->
+    <div id="bar-tooltip" class="tooltip" style="opacity: 0"></div>
+
+    <!-- Quy-Dzu's part please do not disturb the spaghetti -->
+
+    <section>
+      <h2>IDIOT VILLE</h2>
+      <div id="chart"></div>
+    </section>
+
+    <section>
+      <h2>IDIOT VILLE2</h2>
+      <div class="chart-container-fat-carb">
+        <div class="controls-container">
+          <div class="slider-group">
+            <div class="slider-label">Minimum Carbohydrates (g)</div>
+            <div class="slider-container">
+              <input type="range" id="carbSlider" class="slider" min="0" max="100" value="20" step="5">
+              <div class="value-display" id="carbValue">20g</div>
             </div>
           </div>
-
-          <div class="legend-entry">
-            <div class="legend-header">
-              <span class="legend-dot blue-dot"></span>
-              <span class="legend-participant">Participant 10</span>
-            </div>
-            <div class="meal-card">
-              <div>Meal:</div>
-              <ul>
-                <li>🥓 Bacon</li>
-                <li>🍳 Egg</li>
-              </ul>
+          <div class="slider-group">
+            <div class="slider-label">Minimum Total Protein (g)</div>
+            <div class="slider-container">
+              <input type="range" id="fatSlider" class="slider" min="0" max="50" value="10" step="2">
+              <div class="value-display" id="fatValue">10g</div>
             </div>
           </div>
-
-          <button id="replay-button">Replay Animation</button>
-        </div>
-      </section>
-
-      <!-- For intro time series -->
-      <div id="intro-tooltip" class="tooltip" style="opacity: 0"></div>
-
-      <section id="and-carb-chart" class="chart-section">
-        <h2>Average Glucose Spike by Carb Bins</h2>
-        <svg></svg>
-      </section>
-
-      <section id="and-protein-chart" class="chart-section">
-        <h2>Average Glucose Spike by Protein Bins</h2>
-        <svg></svg>
-      </section>
-
-      <!-- For bar chart hover -->
-      <div id="bar-tooltip" class="tooltip" style="opacity: 0"></div>
-      <section>
-        <h2>IDIOT VILLE</h2>
-        <div id="chart"></div>
-      </section>
-      <section>
-        <h2>Chart 4: Comparative Metrics</h2>
-        <div class="chart-container stabilize">
-          <div id="carb_stabilize_chart"></div>
         </div>
 
-        <p>This section compares multiple variables or groups in Chart 4.</p>
-      </section>
-
-      <section>
-        <h2>Chart 5: Insights & Anomalies</h2>
-        <div class="chart-container stabilize">
-          <div id="protein_stabilize_chart"></div>
-          <p>
-            This section highlights notable findings and outliers found in Chart
-            5.
-          </p>
+        <div class="stats-container">
+          <div class="stat-box carb-stat">
+            <div class="stat-label">High Carb Meals</div>
+            <div class="stat-value" id="carbMealCount">0</div>
+          </div>
+          <div class="stat-box fat-stat">
+            <div class="stat-label">High Protein Meals</div>
+            <div class="stat-value" id="fatMealCount">0</div>
+          </div>
         </div>
-      </section>
-    </main>
 
-    <script>
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("visible");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        {
-          threshold: 0.1,
-        }
-      );
+        <div id="chart_fat_carb"></div>
+      </div>
+    </section>
 
-      document.querySelectorAll("section").forEach((section) => {
-        observer.observe(section);
-      });
-    </script>
-    <script src="and-bars.js"></script>
-    <script src="intro.js"></script>
-  <script src="glucose-plot.js"></script>
-    <script src="stabilize_bar_plot.js" type="module"></script>
-  </body>
+    <!-- End of Quy-Dzu Spaghetti -->
+
+
+    <section>
+      <h2>Chart 4: Comparative Metrics</h2>
+      <div class="chart-container stabilize">
+        <div id="carb_stabilize_chart"></div>
+      </div>
+
+      <p>This section compares multiple variables or groups in Chart 4.</p>
+    </section>
+
+    <section>
+      <h2>Chart 5: Insights & Anomalies</h2>
+      <div class="chart-container stabilize">
+        <div id="protein_stabilize_chart"></div>
+        <p>
+          This section highlights notable findings and outliers found in Chart
+          5.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+      }
+    );
+
+    document.querySelectorAll("section").forEach((section) => {
+      observer.observe(section);
+    });
+  </script>
+  <script src="and-bars.js" type="module"></script>
+  <script src="intro.js" type="module"></script>
+  <script src="glucose-plot.js" type="module"></script>
+  <script src="stabilize_bar_plot.js" type="module"></script>
+  <script src="carb_fat_plot.js" type="module"></script>
+</body>
+
 </html>
