@@ -67,3 +67,75 @@ body .stabilize {
   stroke: #ddd;
 }
 
+.stabilize-side-by-side {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-bottom: 60px;
+}
+
+.stabilize-side-by-side .description-box {
+  flex: 0 0 300px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+.stabilize-side-by-side .description-box h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.stabilize-side-by-side .chart-container {
+  flex: 1;
+}
+
+/* Styling charts */
+
+.chart-section {
+  margin: 60px auto; /* slightly more vertical breathing room */
+  max-width: 1200px; /* wider box to give more space to chart + description */
+  background-color: white;
+  padding: 32px; /* more internal spacing */
+  border-radius: 16px; /* slightly rounder corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); /* deeper but still soft shadow */
+}
+
+.chart-row {
+  display: flex;
+  flex-direction: row;
+  gap: 36px;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.chart-description {
+  flex: 1;
+  min-width: 280px;
+  max-width: 420px;
+}
+
+.chart-description h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.chart-description p {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.5;
+}
+
+.chart-visual {
+  flex: 2;
+  min-width: 600px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+

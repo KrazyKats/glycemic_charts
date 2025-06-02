@@ -42,22 +42,40 @@ function createStabilizationChart(data, containerId, options) {
 
   // Dimensions and margins
   const margin = { top: 80, right: 150, bottom: 80, left: 80 };
-  const width = 800 - margin.left - margin.right;
-  const height = 500 - margin.top - margin.bottom;
+  // const width = 800 - margin.left - margin.right;
+  // const height = 500 - margin.top - margin.bottom;
+
+  const width = 1000 - margin.left - margin.right;
+  const height = 600 - margin.top - margin.bottom;
+
 
   // Create tooltip
   const tooltip = d3.select("body").append("div").attr("class", "tooltip");
 
   // Create SVG
+  // const svg = d3
+  //   .select(`#${containerId}`)
+  //   .append("svg")
+  //   .attr("width", width + margin.left + margin.right)
+  //   .attr("height", height + margin.top + margin.bottom);
+
+  // const g = svg
+  //   .append("g")
+  //   .attr("transform", `translate(${margin.left},${margin.top})`);
+
   const svg = d3
     .select(`#${containerId}`)
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
+    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("width", "100%")
+    .style("height", "auto");
 
   const g = svg
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
+
+
   const processedData = [...data.entries()].map(([key, value]) => {
     return {
       id: key,

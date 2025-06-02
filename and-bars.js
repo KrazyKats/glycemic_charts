@@ -23,11 +23,13 @@ function drawBarChart(data, groupKey, valueKey, selector) {
   // Chart container specs
   const width = 700;
   const height = 400;
-  const margin = { top: 30, right: 30, bottom: 40, left: 60 };
+  const margin = { top: 80, right: 30, bottom: 40, left: 60 };
 
-  const svg = d3.select(selector + " svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+  const svg = d3.select(selector)
+    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("width", "100%")
+    .style("height", "auto")
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -82,6 +84,15 @@ function drawBarChart(data, groupKey, valueKey, selector) {
     .attr("x", width / 2)
     .attr("y", height + 35)
     .text(groupKey === "carb_bin" ? "Carbohydrate Bin (g)" : "Protein Bin (g)");
+
+
+  // Chart Title (inside SVG)
+  svg.append("text")
+    .attr("class", "chart-title")
+    .attr("x", width / 2)
+    .attr("y", -40)
+    .attr("text-anchor", "middle")
+    .text(groupKey === "carb_bin" ? "Average Glucose Spike by Carbohydrate Bin" : "Average Glucose Spike by Protein Bin");
 
   // Bars (color comes from style.css, interactivity from JS)
   svg.selectAll(".bar")

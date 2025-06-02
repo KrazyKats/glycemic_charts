@@ -84,14 +84,30 @@
     <!-- For intro time series -->
     <div id="intro-tooltip" class="tooltip" style="opacity: 0"></div>
 
-    <section id="and-carb-chart" class="chart-section">
-      <h2>Average Glucose Spike by Carb Bins</h2>
-      <svg></svg>
+    <section class="chart-section">
+      <div class="chart-row">
+        <div class="chart-description">
+          <p>
+            Hippity Hoppity this box is my property. Description box for your thoughts.
+          </p>
+        </div>
+        <div class="chart-visual">
+          <svg id="and-carb-chart"></svg>
+        </div>
+      </div>
     </section>
 
-    <section id="and-protein-chart" class="chart-section">
-      <h2>Average Glucose Spike by Protein Bins</h2>
-      <svg></svg>
+    <section class="chart-section">
+      <div class="chart-row">
+        <div class="chart-description">
+          <p>
+            Hippity Hoppity this box is my property. Description box for your thoughts.
+          </p>
+        </div>
+        <div class="chart-visual">
+          <svg id="and-protein-chart"></svg>
+        </div>
+      </div>
     </section>
 
     <!-- For bar chart hover -->
@@ -141,26 +157,33 @@
 
     <!-- End of Quy-Dzu Spaghetti -->
 
-
-    <section>
-      <h2>Chart 4: Comparative Metrics</h2>
-      <div class="chart-container stabilize">
-        <div id="carb_stabilize_chart"></div>
-      </div>
-
-      <p>This section compares multiple variables or groups in Chart 4.</p>
-    </section>
-
-    <section>
-      <h2>Chart 5: Insights & Anomalies</h2>
-      <div class="chart-container stabilize">
-        <div id="protein_stabilize_chart"></div>
-        <p>
-          This section highlights notable findings and outliers found in Chart
-          5.
-        </p>
+    <section class="chart-section">
+      <div class="chart-row">
+        <div class="chart-description">
+          <p>
+            Hippity Hoppity this box is my property. Description box for your thoughts.
+          </p>
+        </div>
+        <div class="chart-visual">
+          <div id="carb_stabilize_chart" class="stabilize"></div>
+        </div>
       </div>
     </section>
+
+
+    <section class="chart-section">
+      <div class="chart-row">
+        <div class="chart-description">
+          <p>
+            Hippity Hoppity this box is my property. Description box for your thoughts.
+          </p>
+        </div>
+        <div class="chart-visual">
+          <div id="protein_stabilize_chart" class="stabilize"></div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <script>
@@ -188,5 +211,4 @@
   <script src="stabilize_bar_plot.js" type="module"></script>
   <script src="carb_fat_plot.js" type="module"></script>
 </body>
-
 </html>
