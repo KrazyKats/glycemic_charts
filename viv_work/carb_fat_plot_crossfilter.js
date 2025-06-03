@@ -1,5 +1,5 @@
 // Chart dimensions
-const margin = { top: 20, right: 200, bottom: 60, left: 70 };
+const margin = { top: 20, right: 240, bottom: 60, left: 70 };
 const width = 1000 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
 
@@ -84,8 +84,11 @@ function filterData(data, carbPercentile, fatPercentile) {
   const minCarb = getValueAtPercentile(carbPercentiles, carbPercentile);
   const minFat = getValueAtPercentile(fatPercentiles, fatPercentile);
   
-  const carbData = data.filter((d) => d.total_carb >= minCarb);
-  const fatData = data.filter((d) => d.protein >= minFat);
+  // Filter for high carb meals (excluding those that are also high protein)
+  const carbData = data.filter((d) => d.total_carb >= minCarb && d.protein < minFat);
+  
+  // Filter for high protein meals (excluding those that are also high carb)
+  const fatData = data.filter((d) => d.protein >= minFat && d.total_carb < minCarb);
 
   return {
     carbData: aggregateData(carbData),
@@ -248,7 +251,7 @@ function createChart(carbData, fatData) {
       tooltip
         .html(
           `
-                <strong>High Carb Meals</strong><br/>
+                <strong>High Carb Only Meals</strong><br/>
                 Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
                 Glucose Diff: ${
                   d.glucose_diff > 0 ? "+" : ""
@@ -320,7 +323,7 @@ function createChart(carbData, fatData) {
       tooltip
         .html(
           `
-                <strong>High Protein Meals</strong><br/>
+                <strong>High Protein Only Meals</strong><br/>
                 Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
                 Glucose Diff: ${
                   d.glucose_diff > 0 ? "+" : ""
@@ -388,7 +391,7 @@ function createChart(carbData, fatData) {
     const carbPercentile = parseInt(carbSlider.value);
     const carbActualValue = getValueAtPercentile(carbPercentiles, carbPercentile);
     legendData.push({
-      label: `High Carb (≥${carbPercentile}% / ${carbActualValue.toFixed(1)}g)`,
+      label: `High Carb Only (≥${carbPercentile}% / ${carbActualValue.toFixed(1)}g)`,
       color: "#e74c3c",
     });
   }
@@ -396,7 +399,7 @@ function createChart(carbData, fatData) {
     const fatPercentile = parseInt(fatSlider.value);
     const fatActualValue = getValueAtPercentile(fatPercentiles, fatPercentile);
     legendData.push({
-      label: `High Protein (≥${fatPercentile}% / ${fatActualValue.toFixed(1)}g)`,
+      label: `High Protein Only (≥${fatPercentile}% / ${fatActualValue.toFixed(1)}g)`,
       color: "#3498db",
     });
   }
@@ -525,11 +528,11 @@ async function loadData() {
     fatPercentiles = calculatePercentiles(data, 'protein');
 
     // Set slider ranges to percentiles (0-100)
-    carbSlider.min = 0;
+    carbSlider.min = 50;
     carbSlider.max = 100;
     carbSlider.value = 50; // Start at median
     
-    fatSlider.min = 0;
+    fatSlider.min = 50;
     fatSlider.max = 100;
     fatSlider.value = 50; // Start at median
 
