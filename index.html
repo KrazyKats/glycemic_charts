@@ -3,11 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <title>Dashboard Overview</title>
+    <link rel="stylesheet" href="interactive_style.css" />
     <link rel="stylesheet" href="global_style.css" />
     <link rel="stylesheet" href="stabilize_style.css" />
     <link rel="stylesheet" href="style.css" />
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="and-bars.js" type="module"></script>
+    <script src="intro.js" type="module"></script>
+    <script src="glucose-plot.js" type="module"></script>
+    <script src="stabilize_bar_plot.js" type="module"></script>
+    <script src="carb_fat_plot.js" type="module"></script>
   </head>
+
   <body>
     <header>
       <h1>Project Dashboard</h1>
@@ -81,44 +88,137 @@
       <!-- For intro time series -->
       <div id="intro-tooltip" class="tooltip" style="opacity: 0"></div>
 
-      <section id="and-carb-chart" class="chart-section carb-plot">
-        <h2>High Carb Meals Correlate With High Blood Sugar Spikes</h2>
-        <svg></svg>
+      <section class="chart-section">
+        <h2 class="subheader">
+          High Carb Meals Are Typically Followed With High Blood Sugar Spikes
+        </h2>
+        <div class="chart-row">
+          <div class="chart-description">
+            <p>
+              Hippity Hoppity this box is my property. Description box for your
+              thoughts
+            </p>
+          </div>
+          <div class="chart-visual carb-plot">
+            <svg id="and-carb-chart" class="chart-section"></svg>
+          </div>
+        </div>
       </section>
 
-      <section id="and-protein-chart" class="chart-section protein-plot">
-        <h2>
-          High Protein Meals Have Less Pronounced Blood Sugar Spikes than Carbs
+      <section class="chart-section">
+        <h2 class="subheader">
+          High Protein Meals Have Less Pronounced Blood Sugar Spikes than High
+          Carb Meals
         </h2>
-        <svg></svg>
+        <div class="chart-row">
+          <div class="chart-description">
+            <p>
+              Hippity Hoppity this box is my property. Description box for your
+              thoughts.
+            </p>
+          </div>
+          <div class="chart-visual protein-plot">
+            <svg id="and-protein-chart" class="chart-section"></svg>
+          </div>
+        </div>
       </section>
 
       <!-- For bar chart hover -->
       <div id="bar-tooltip" class="tooltip" style="opacity: 0"></div>
-      <section>
-        <h2>IDIOT VILLE</h2>
-        <div id="chart"></div>
-      </section>
-      <section class="carb-plot">
-        <h2>High Carbohydrate Meals Have Blood Sugar Rapidly Reduce After Peaking</h2>
-        <div class="chart-container stabilize">
-          <div id="carb_stabilize_chart"></div>
+
+      <!-- Quy-Dzu's part please do not disturb the spaghetti -->
+      <section class="chart-section">
+        <h2 class="subheader">
+          High Carbohydrate Meals Have Blood Sugar Rapidly Reduce After Peaking
+        </h2>
+        <div class="chart-row">
+          <div class="chart-description">
+            <p>
+              Hippity Hoppity this box is my property. Description box for your
+              thoughts.
+            </p>
+          </div>
+          <div class="chart-visual carb-plot">
+            <div id="carb_stabilize_chart" class="stabilize"></div>
+          </div>
         </div>
-
-        <p>This section compares multiple variables or groups in Chart 4.</p>
       </section>
 
-      <section class="protein-plot">
-        <h2>High Protein Meals Have Blood Sugar Reduce Slower After Peakings</h2>
-        <div class="chart-container stabilize">
-          <div id="protein_stabilize_chart"></div>
-          <p>
-            This section highlights notable findings and outliers found in Chart
-            5.
-          </p>
+      <section class="chart-section">
+        <h2 class="subheader">
+          High Protein Meals Have Blood Sugar Slightly Increase After Peaking
+        </h2>
+        <div class="chart-row">
+          <div class="chart-description">
+            <p>
+              Hippity Hoppity this box is my property. Description box for your
+              thoughts.
+            </p>
+          </div>
+          <div class="chart-visual protein-plot">
+            <div id="protein_stabilize_chart" class="stabilize"></div>
+          </div>
         </div>
       </section>
     </main>
+
+    <section>
+      <h2>IDIOT VILLE</h2>
+      <div id="chart"></div>
+    </section>
+
+    <section>
+      <h2>IDIOT VILLE2</h2>
+      <div class="chart-container-fat-carb">
+        <div class="controls-container">
+          <div class="slider-group">
+            <div class="slider-label">Minimum Carbohydrates (g)</div>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="carbSlider"
+                class="slider"
+                min="0"
+                max="100"
+                value="20"
+                step="5"
+              />
+              <div class="value-display" id="carbValue">20g</div>
+            </div>
+          </div>
+          <div class="slider-group">
+            <div class="slider-label">Minimum Total Protein (g)</div>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="fatSlider"
+                class="slider"
+                min="0"
+                max="50"
+                value="10"
+                step="2"
+              />
+              <div class="value-display" id="fatValue">10g</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-container">
+          <div class="stat-box carb-stat">
+            <div class="stat-label">High Carb Meals</div>
+            <div class="stat-value" id="carbMealCount">0</div>
+          </div>
+          <div class="stat-box fat-stat">
+            <div class="stat-label">High Protein Meals</div>
+            <div class="stat-value" id="fatMealCount">0</div>
+          </div>
+        </div>
+
+        <div id="chart_fat_carb"></div>
+      </div>
+    </section>
+
+    <!-- End of Quy-Dzu Spaghetti -->
 
     <script>
       const observer = new IntersectionObserver(
@@ -139,9 +239,5 @@
         observer.observe(section);
       });
     </script>
-    <script src="and-bars.js"></script>
-    <script src="intro.js"></script>
-    <script src="glucose-plot.js"></script>
-    <script src="stabilize_bar_plot.js" type="module"></script>
   </body>
 </html>

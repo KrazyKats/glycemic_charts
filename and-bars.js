@@ -23,11 +23,13 @@ function drawBarChart(data, groupKey, valueKey, selector) {
   // Chart container specs
   const width = 700;
   const height = 400;
-  const margin = { top: 30, right: 30, bottom: 40, left: 60 };
+  const margin = { top: 80, right: 30, bottom: 40, left: 60 };
 
-  const svg = d3.select(selector + " svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+  const svg = d3.select(selector)
+    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("width", "100%")
+    .style("height", "auto")
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -40,17 +42,6 @@ function drawBarChart(data, groupKey, valueKey, selector) {
   )
   .range([0, width])
   .padding(0.1);
-
-  // const allProteinBins = ["0-3g", "3-10g", "10-15g", "15-25g", "25-40g", "40+g"];
-  // const allCarbBins = ["[0.0, 10.0)", "[10.0, 20.0)", "[20.0, 35.0)", "[35.0, 50.0)", "[50.0, 75.0)", "[75.0, inf)"];
-  // const allBins = groupKey === "protein_bin" ? allProteinBins : allCarbBins;
-
-  // const filteredBins = allBins.filter(bin => groupedData.some(d => d.key === bin));
-
-  // const x = d3.scaleBand()
-  //   .domain(filteredBins)
-  //   .range([0, width])
-
 
   const y = d3.scaleLinear()
     .domain([0, d3.max(groupedData, d => d.value)])
@@ -82,6 +73,15 @@ function drawBarChart(data, groupKey, valueKey, selector) {
     .attr("x", width / 2)
     .attr("y", height + 35)
     .text(groupKey === "carb_bin" ? "Carbohydrate Bin (g)" : "Protein Bin (g)");
+
+
+  // Chart Title (inside SVG)
+  svg.append("text")
+    .attr("class", "chart-title")
+    .attr("x", width / 2)
+    .attr("y", -40)
+    .attr("text-anchor", "middle")
+    .text(groupKey === "carb_bin" ? "Average Glucose Spike by Carbohydrate Bin" : "Average Glucose Spike by Protein Bin");
 
   // Bars (color comes from style.css, interactivity from JS)
   svg.selectAll(".bar")
