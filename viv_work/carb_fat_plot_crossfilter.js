@@ -1,5 +1,5 @@
 // Chart dimensions
-const margin = { top: 20, right: 200, bottom: 60, left: 70 };
+const margin = { top: 20, right: 240, bottom: 60, left: 70 };
 const width = 1000 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
 
@@ -14,10 +14,6 @@ const carbValue = document.getElementById("carbValue");
 const fatValue = document.getElementById("fatValue");
 const carbMealCount = document.getElementById("carbMealCount");
 const fatMealCount = document.getElementById("fatMealCount");
-const avgCarbHighCarb = document.getElementById("avgCarbHighCarb");
-const avgFatHighCarb = document.getElementById("avgFatHighCarb");
-const avgCarbHighFat = document.getElementById("avgCarbHighFat");
-const avgFatHighFat = document.getElementById("avgFatHighFat");
 
 // Update display values and chart when sliders change
 carbSlider.addEventListener("input", function () {
@@ -35,9 +31,9 @@ fatSlider.addEventListener("input", function () {
 });
 
 function calculatePercentiles(data, field) {
-  const values = data.map((d) => d[field]).sort((a, b) => a - b);
+  const values = data.map(d => d[field]).sort((a, b) => a - b);
   const percentiles = [];
-
+  
   for (let p = 0; p <= 100; p++) {
     const index = (p / 100) * (values.length - 1);
     if (index === Math.floor(index)) {
@@ -48,7 +44,7 @@ function calculatePercentiles(data, field) {
       percentiles[p] = lower + (upper - lower) * (index - Math.floor(index));
     }
   }
-
+  
   return percentiles;
 }
 
@@ -87,25 +83,18 @@ function aggregateData(data, timeInterval = 5) {
 function filterData(data, carbPercentile, fatPercentile) {
   const minCarb = getValueAtPercentile(carbPercentiles, carbPercentile);
   const minFat = getValueAtPercentile(fatPercentiles, fatPercentile);
-
-  const carbData = data.filter((d) => d.total_carb >= minCarb);
-  const fatData = data.filter((d) => d.protein >= minFat);
-  const avgCarbHighFat = d3.mean(fatData, (d) => d.total_carb);
-  const avgFatHighCarb = d3.mean(carbData, (d) => d.protein);
-  const avgFatHighFat = d3.mean(fatData, (d) => d.protein);
-  const avgCarbHighCarb = d3.mean(carbData, (d) => d.total_carb);
-
-  // console.log(carbInHighFat, fatInHighCarb, carbInHighCarb, fatInHighFat);
+  
+  // Filter for high carb meals (excluding those that are also high protein)
+  const carbData = data.filter((d) => d.total_carb >= minCarb && d.protein < minFat);
+  
+  // Filter for high protein meals (excluding those that are also high carb)
+  const fatData = data.filter((d) => d.protein >= minFat && d.total_carb < minCarb);
 
   return {
     carbData: aggregateData(carbData),
     fatData: aggregateData(fatData),
     carbMealCount: new Set(carbData.map((d) => d.food_time)).size,
     fatMealCount: new Set(fatData.map((d) => d.food_time)).size,
-    avgCarbHighCarb: avgCarbHighCarb || 0,
-    avgFatHighCarb: avgFatHighCarb || 0,
-    avgCarbHighFat: avgCarbHighFat || 0,
-    avgFatHighFat: avgFatHighFat || 0,
   };
 }
 
@@ -262,7 +251,7 @@ function createChart(carbData, fatData) {
       tooltip
         .html(
           `
-                <strong>High Carb Meals</strong><br/>
+                <strong>High Carb Only Meals</strong><br/>
                 Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
                 Glucose Diff: ${
                   d.glucose_diff > 0 ? "+" : ""
@@ -334,7 +323,7 @@ function createChart(carbData, fatData) {
       tooltip
         .html(
           `
-                <strong>High Protein Meals</strong><br/>
+                <strong>High Protein Only Meals</strong><br/>
                 Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
                 Glucose Diff: ${
                   d.glucose_diff > 0 ? "+" : ""
@@ -400,12 +389,9 @@ function createChart(carbData, fatData) {
   const legendData = [];
   if (carbData.length > 0) {
     const carbPercentile = parseInt(carbSlider.value);
-    const carbActualValue = getValueAtPercentile(
-      carbPercentiles,
-      carbPercentile
-    );
+    const carbActualValue = getValueAtPercentile(carbPercentiles, carbPercentile);
     legendData.push({
-      label: `High Carb (≥${carbPercentile}% / ${carbActualValue.toFixed(1)}g)`,
+      label: `High Carb Only (≥${carbPercentile}% / ${carbActualValue.toFixed(1)}g)`,
       color: "#e74c3c",
     });
   }
@@ -413,9 +399,7 @@ function createChart(carbData, fatData) {
     const fatPercentile = parseInt(fatSlider.value);
     const fatActualValue = getValueAtPercentile(fatPercentiles, fatPercentile);
     legendData.push({
-      label: `High Protein (≥${fatPercentile}% / ${fatActualValue.toFixed(
-        1
-      )}g)`,
+      label: `High Protein Only (≥${fatPercentile}% / ${fatActualValue.toFixed(1)}g)`,
       color: "#3498db",
     });
   }
@@ -515,17 +499,9 @@ function updateChart() {
   // Animate meal counts
   const currentCarbCount = parseInt(carbMealCount.textContent) || 0;
   const currentFatCount = parseInt(fatMealCount.textContent) || 0;
-  const currentCarbInCarb = parseFloat(avgCarbHighCarb.textContent) || 0;
-  const currentFatInCarb = parseFloat(avgFatHighCarb.textContent) || 0;
-  const currentCarbInFat = parseFloat(avgCarbHighFat.textContent) || 0;
-  const currentFatInFat = parseFloat(avgFatHighFat.textContent) || 0;
 
   animateNumber(carbMealCount, currentCarbCount, filtered.carbMealCount);
   animateNumber(fatMealCount, currentFatCount, filtered.fatMealCount);
-  animateNumber(avgCarbHighCarb, currentCarbInCarb, filtered.avgCarbHighCarb);
-  animateNumber(avgFatHighCarb, currentFatInCarb, filtered.avgFatHighCarb);
-  animateNumber(avgCarbHighFat, currentCarbInFat, filtered.avgCarbHighFat);
-  animateNumber(avgFatHighFat, currentFatInFat, filtered.avgFatHighFat);
 
   createChart(filtered.carbData, filtered.fatData);
 }
@@ -548,26 +524,23 @@ async function loadData() {
     rawData = data;
 
     // Calculate percentiles for both carbs and protein
-    carbPercentiles = calculatePercentiles(data, "total_carb");
-    fatPercentiles = calculatePercentiles(data, "protein");
+    carbPercentiles = calculatePercentiles(data, 'total_carb');
+    fatPercentiles = calculatePercentiles(data, 'protein');
 
     // Set slider ranges to percentiles (0-100)
-    const startingFat = 76;
-    const startingCarb = 50;
-
-    carbSlider.min = 0;
+    carbSlider.min = 50;
     carbSlider.max = 100;
-    carbSlider.value = startingCarb; // Start at median
-
-    fatSlider.min = 0;
+    carbSlider.value = 50; // Start at median
+    
+    fatSlider.min = 50;
     fatSlider.max = 100;
-    fatSlider.value = startingFat;
+    fatSlider.value = 50; // Start at median
 
     // Initialize display values
-    const initialCarbValue = getValueAtPercentile(carbPercentiles, startingCarb);
-    const initialFatValue = getValueAtPercentile(fatPercentiles, startingFat);
-    carbValue.textContent = `${startingCarb}% (${initialCarbValue.toFixed(1)}g)`;
-    fatValue.textContent = `${startingFat}% (${initialFatValue.toFixed(1)}g)`;
+    const initialCarbValue = getValueAtPercentile(carbPercentiles, 50);
+    const initialFatValue = getValueAtPercentile(fatPercentiles, 50);
+    carbValue.textContent = `50% (${initialCarbValue.toFixed(1)}g)`;
+    fatValue.textContent = `50% (${initialFatValue.toFixed(1)}g)`;
 
     updateChart();
   } catch (error) {

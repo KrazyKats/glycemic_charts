@@ -162,17 +162,17 @@
       </section>
     </main>
 
-    <section>
+    <!-- <section>
       <h2>IDIOT VILLE</h2>
       <div id="chart"></div>
-    </section>
+    </section> -->
 
     <section>
-      <h2>IDIOT VILLE2</h2>
+      <h2>Average Blood Sugar Change After High Carb and High Protein Meals</h2>
       <div class="chart-container-fat-carb">
         <div class="controls-container">
           <div class="slider-group">
-            <div class="slider-label">Minimum Carbohydrates (g)</div>
+            <div class="slider-label">Minimum Carbohydrates Percentile</div>
             <div class="slider-container">
               <input
                 type="range"
@@ -187,7 +187,7 @@
             </div>
           </div>
           <div class="slider-group">
-            <div class="slider-label">Minimum Total Protein (g)</div>
+            <div class="slider-label">Minimum Protein Percentile</div>
             <div class="slider-container">
               <input
                 type="range"
@@ -208,9 +208,25 @@
             <div class="stat-label">High Carb Meals</div>
             <div class="stat-value" id="carbMealCount">0</div>
           </div>
+          <div class="stat-box carb-stat">
+            <div class="stat-label">Average Carb Content </div>
+            <div class="stat-value" id="avgCarbHighCarb">0</div>
+          </div>
+          <div class="stat-box carb-stat">
+            <div class="stat-label">Average Protein Content</div>
+            <div class="stat-value" id="avgFatHighCarb">0</div>
+          </div>
           <div class="stat-box fat-stat">
             <div class="stat-label">High Protein Meals</div>
             <div class="stat-value" id="fatMealCount">0</div>
+          </div>
+          <div class="stat-box fat-stat">
+            <div class="stat-label">Average Carb Content</div>
+            <div class="stat-value" id="avgCarbHighFat">0</div>
+          </div>
+          <div class="stat-box fat-stat">
+            <div class="stat-label">Average Protein Content</div>
+            <div class="stat-value" id="avgFatHighFat">0</div>
           </div>
         </div>
 
