@@ -21,15 +21,13 @@ function drawBarChart(data, groupKey, valueKey, selector) {
   }));
 
   // Chart container specs
-  const width = 700;
-  const height = 400;
+  const width = 500;
+  const height = 360;
   const margin = { top: 80, right: 30, bottom: 40, left: 60 };
 
   const svg = d3.select(selector)
     .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
     .attr("preserveAspectRatio", "xMidYMid meet")
-    .style("width", "100%")
-    .style("height", "auto")
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
