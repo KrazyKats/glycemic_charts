@@ -552,19 +552,22 @@ async function loadData() {
     fatPercentiles = calculatePercentiles(data, "protein");
 
     // Set slider ranges to percentiles (0-100)
+    const startingFat = 76;
+    const startingCarb = 50;
+
     carbSlider.min = 0;
     carbSlider.max = 100;
-    carbSlider.value = 50; // Start at median
+    carbSlider.value = startingCarb; // Start at median
 
     fatSlider.min = 0;
     fatSlider.max = 100;
-    fatSlider.value = 50; // Start at median
+    fatSlider.value = startingFat;
 
     // Initialize display values
-    const initialCarbValue = getValueAtPercentile(carbPercentiles, 50);
-    const initialFatValue = getValueAtPercentile(fatPercentiles, 50);
-    carbValue.textContent = `50% (${initialCarbValue.toFixed(1)}g)`;
-    fatValue.textContent = `50% (${initialFatValue.toFixed(1)}g)`;
+    const initialCarbValue = getValueAtPercentile(carbPercentiles, startingCarb);
+    const initialFatValue = getValueAtPercentile(fatPercentiles, startingFat);
+    carbValue.textContent = `${startingCarb}% (${initialCarbValue.toFixed(1)}g)`;
+    fatValue.textContent = `${startingFat}% (${initialFatValue.toFixed(1)}g)`;
 
     updateChart();
   } catch (error) {
