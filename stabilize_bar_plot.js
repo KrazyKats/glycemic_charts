@@ -69,7 +69,7 @@ function createStabilizationChart(data, containerId, options) {
   d3.select(`#${containerId}`).selectAll("*").remove();
 
   // Dimensions and margins
-  const margin = { top: 50, right: 150, bottom: 80, left: 80 };
+  const margin = { top: 60, right: 150, bottom: 80, left: 80 };
   // const width = 800 - margin.left - margin.right;
   // const height = 500 - margin.top - margin.bottom;
 
