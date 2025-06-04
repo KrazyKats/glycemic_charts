@@ -308,7 +308,7 @@ nav a.active {
 
 .chart-section {
   margin: 60px auto; /* slightly more vertical breathing room */
-  max-width: 1100px; /* wider box to give more space to chart + description */
+  max-width: 950; /* wider box to give more space to chart + description */
   background-color: white;
   padding: 32px; /* more internal spacing */
   border-radius: 16px; /* slightly rounder corners */
@@ -353,3 +353,8 @@ nav a.active {
   min-width: 500px;
   max-width: 100%;
 }
+
+/* .chart-visual svg {
+  max-width: 650px;
+  margin: 0 auto;
+} */
