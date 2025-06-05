@@ -245,7 +245,7 @@ footer {
   background-color: #f0f0f0;
 }
 
-.tooltip {
+/* .tooltip {
   position: absolute;
   pointer-events: none;
   background: white;
@@ -257,7 +257,40 @@ footer {
   color: #333;
   line-height: 1.4em;
   z-index: 10;
+} */
+
+/* #intro-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+  line-height: 1.4em;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+} */
+ 
+#intro-tooltip.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+  line-height: 1.4em;
+  z-index: 1000;
+  opacity: 0; /* This line is key */
+  transition: opacity 0.2s ease;
 }
+
 
 .intro-title {
   font-size: 20px;
