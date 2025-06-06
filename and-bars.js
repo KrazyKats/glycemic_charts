@@ -22,7 +22,7 @@ function drawBarChart(data, groupKey, valueKey, selector) {
 
   // Chart container specs
   const width = 500;
-  const height = 360;
+  const height = 250;
   const margin = { top: 80, right: 30, bottom: 40, left: 60 };
 
   const svg = d3

@@ -656,7 +656,7 @@ scroller
         }
 
         // Add your custom event logic here per index
-        console.log("Entered step:", index);
+        // console.log("Entered step:", index);
     });
 
 // Load data when page loads
