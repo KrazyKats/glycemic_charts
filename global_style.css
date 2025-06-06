@@ -92,13 +92,17 @@ svg {
   min-height: 400px;
 }
 
-.bar {
-  fill: steelblue;
+.protein-plot .bar {
+  fill: #2E86AB;
+  transition: fill 0.2s;
+}
+.carb-plot .bar {
+  fill: orange;
   transition: fill 0.2s;
 }
 
 .bar:hover {
-  fill: darkorange;
+  fill: green;
 }
 
 .chart-section {
@@ -241,7 +245,7 @@ footer {
   background-color: #f0f0f0;
 }
 
-.tooltip {
+/* .tooltip {
   position: absolute;
   pointer-events: none;
   background: white;
@@ -253,7 +257,40 @@ footer {
   color: #333;
   line-height: 1.4em;
   z-index: 10;
+} */
+
+/* #intro-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+  line-height: 1.4em;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+} */
+ 
+#intro-tooltip.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+  line-height: 1.4em;
+  z-index: 1000;
+  opacity: 0; /* This line is key */
+  transition: opacity 0.2s ease;
 }
+
 
 .intro-title {
   font-size: 20px;
@@ -298,3 +335,59 @@ nav a.active {
   background-color: #eaf1fb;
   color: #1a73e8;
 }
+
+
+/* Side-by-Side Styling */
+
+.chart-section {
+  margin: 60px auto; /* slightly more vertical breathing room */
+  max-width: 950; /* wider box to give more space to chart + description */
+  background-color: white;
+  padding: 32px; /* more internal spacing */
+  border-radius: 16px; /* slightly rounder corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); /* deeper but still soft shadow */
+}
+
+.chart-title {
+  font-size: 18px;
+  fill: #2c3e50;
+  font-weight: bold;
+}
+
+.chart-row {
+  display: flex;
+  flex-direction: row;
+  gap: 36px;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.chart-description {
+  flex: 1;
+  min-width: 280px;
+  max-width: 420px;
+}
+
+.chart-description h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.chart-description p {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.5;
+}
+
+.chart-visual {
+  flex: 2;
+  min-width: 500px;
+  max-width: 100%;
+}
+
+/* .chart-visual svg {
+  max-width: 650px;
+  margin: 0 auto;
+} */

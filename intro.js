@@ -1,14 +1,14 @@
-// intro.js 
+// intro.js
 
 /** INTRO TIME SERIES PLOT **/
-d3.json("website_data/glucose_intro_traces.json").then(data => {
-  const spikey = data.spikey;
-  const flat = data.flat;
+d3.json("website_data/glucose_carb_vs_protein.json").then(data => {
+  const highCarb = data.high_carb;
+  const highProtein = data.high_protein;
 
-  drawGlucoseLines(spikey, flat);
+  drawGlucoseLines(highCarb, highProtein);
 });
 
-function drawGlucoseLines(spikey, flat) {
+function drawGlucoseLines(highCarb, highProtein) {
   const margin = { top: 30, right: 30, bottom: 50, left: 60 },
         width = 700 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
@@ -22,8 +22,8 @@ function drawGlucoseLines(spikey, flat) {
   const x = d3.scaleLinear().domain([-30, 120]).range([0, width]);
   const y = d3.scaleLinear()
     .domain([
-      d3.min(flat.concat(spikey), d => d.glucose) - 10,
-      d3.max(flat.concat(spikey), d => d.glucose) + 10
+      d3.min(highCarb.concat(highProtein), d => d.glucose) - 10,
+      d3.max(highCarb.concat(highProtein), d => d.glucose) + 10
     ])
     .range([height, 0]);
 
@@ -51,22 +51,22 @@ function drawGlucoseLines(spikey, flat) {
     .style("font-size", "13px")
     .text("Blood Glucose Levels (mg/dL)");
 
-  const spikeyPath = svg.append("path")
-    .datum(spikey)
+  const pathHighCarb = svg.append("path")
+    .datum(highCarb)
     .attr("fill", "none")
     .attr("stroke", "red")
     .attr("stroke-width", 4.5)
     .attr("d", line);
 
-  const flatPath = svg.append("path")
-    .datum(flat)
+  const pathHighProtein = svg.append("path")
+    .datum(highProtein)
     .attr("fill", "none")
     .attr("stroke", "steelblue")
     .attr("stroke-width", 4.5)
     .attr("d", line);
 
-  animatePath(spikeyPath, 2500);
-  animatePath(flatPath, 2500);
+  animatePath(pathHighCarb, 2500);
+  animatePath(pathHighProtein, 2500);
 
   svg.append("line")
     .attr("x1", x(0)).attr("x2", x(0))
@@ -83,8 +83,8 @@ function drawGlucoseLines(spikey, flat) {
     .style("fill", "#666");
 
   d3.select("#replay-button").on("click", () => {
-    animatePath(spikeyPath, 2500);
-    animatePath(flatPath, 2500);
+    animatePath(pathHighCarb, 2500);
+    animatePath(pathHighProtein, 2500);
   });
 
   // === Tooltip interaction per line ===
@@ -112,12 +112,10 @@ function drawGlucoseLines(spikey, flat) {
       .on("mouseleave", () => tooltip.style("opacity", 0));
   }
 
-  attachTooltip(spikeyPath, spikey, "red", "Participant 12");
-  attachTooltip(flatPath, flat, "steelblue", "Participant 10");
+  attachTooltip(pathHighCarb, highCarb, "red", "High Carb: Cinnamon Rolls");
+  attachTooltip(pathHighProtein, highProtein, "steelblue", "High Protein: Turkey Wings");
 }
 
-
-// Animate the path drawing from left to right
 function animatePath(path, duration = 2500) {
   const totalLength = path.node().getTotalLength();
 
