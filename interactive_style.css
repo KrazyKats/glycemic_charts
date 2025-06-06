@@ -1,8 +1,6 @@
-
-
 .chart-container-fat-carb {
     margin: 2rem auto;
-    display:grid;
+    display: grid;
     flex-direction: column;
     flex-direction: row;
     max-width: 10000px;
@@ -27,6 +25,7 @@
     transition: all 0.3s ease;
 }
 
+
 .slider-group {
     display: flex;
     flex-direction: column;
@@ -40,6 +39,15 @@
 }
 
 .slider-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #2c3e50;
+    transition: color 0.2s ease;
+}
+
+
+.slider-label-red {
     font-weight: 600;
     margin-bottom: 8px;
     font-size: 14px;
@@ -149,7 +157,7 @@
 
 .grid line {
     stroke: #e0e0e0;
-    stroke-dasharray: 2,2;
+    stroke-dasharray: 2, 2;
 }
 
 .axis {
@@ -164,13 +172,13 @@
 .zero-line {
     stroke: #95a5a6;
     stroke-width: 2;
-    stroke-dasharray: 5,5;
+    stroke-dasharray: 5, 5;
 }
 
 .meal-marker {
     stroke: #e74c3c;
     stroke-width: 2;
-    stroke-dasharray: 3,3;
+    stroke-dasharray: 3, 3;
 }
 
 .legend {
@@ -193,7 +201,7 @@
     padding: 10px 12px;
     border-radius: 6px;
     font-size: 13px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     color: #333;
     line-height: 1.4em;
     z-index: 10;
@@ -201,18 +209,19 @@
 }
 
 .stats-container {
-    display: flex;
-    gap: 30px;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 10px;
+    row-gap: 30px;
+    justify-items: center;
     margin-bottom: 20px;
-    flex-wrap: wrap;
     transition: all 0.3s ease;
 }
 
 .stat-box {
     background: #f8f9fa;
     padding: 12px 20px;
-    border-radius: 8px;
+    border-radius: px;
     border: 1px solid #e9ecef;
     text-align: center;
     min-width: 120px;
@@ -238,6 +247,26 @@
     border-left: 4px solid #3498db;
 }
 
+/* Make carb slider track red */
+#carbSlider {
+    accent-color: #e74c3c;
+    /* for modern browsers */
+}
+
+/* Fallback and cross-browser styling */
+#carbSlider::-webkit-slider-thumb {
+    background: #e74c3c;
+}
+
+#carbSlider::-moz-range-thumb {
+    background: #e74c3c;
+}
+
+#carbSlider:hover {
+    background: #f5c6c6;
+}
+
+
 .error-message {
     text-align: center;
     color: #e74c3c;
@@ -245,4 +274,40 @@
     background: #fff5f5;
     border-radius: 8px;
     border: 1px solid #fed7d7;
+}
+
+
+
+.scroll-wrapper {
+    display: flex;
+    gap: 2rem;
+    margin: 80px 0;
+}
+
+.scroll-text {
+    width: 40%;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.scroll-text .step {
+    margin-bottom: 3rem;
+    padding: 1rem;
+    background: #fff;
+    border-left: 5px solid #3498db;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.scroll-graphic {
+    width: 60%;
+    position: relative;
+}
+
+.sticky-chart {
+    position: sticky;
+    top: 100px;
+}
+
+.controls-container {
+    transition: opacity 0.5s ease-in-out;
 }

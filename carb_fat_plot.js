@@ -1,3 +1,6 @@
+
+import scrollama from "https://cdn.jsdelivr.net/npm/scrollama@3.2.0/+esm";
+
 // Chart dimensions
 const margin = { top: 20, right: 200, bottom: 60, left: 70 };
 const width = 1000 - margin.left - margin.right;
@@ -608,9 +611,7 @@ async function loadData() {
 }
 
 // create button to set chart to specific carb and fat percentiles
-document.getElementById("setPercentilesButton").addEventListener("click", function () {
-    const carbPercentile = 50;
-    const fatPercentile = 100;
+function fixed_transform(carbPercentile, fatPercentile) {
 
     const actualValue_fat = getValueAtPercentile(fatPercentiles, fatPercentile);
     fatValue.textContent = `${fatPercentile}% (${actualValue_fat.toFixed(1)}g)`;
@@ -624,7 +625,39 @@ document.getElementById("setPercentilesButton").addEventListener("click", functi
     // update the sliders to match
     carbSlider.value = carbPercentile;
     fatSlider.value = fatPercentile;
-});
+}
+
+
+const scroller = scrollama();
+
+scroller
+    .setup({
+        step: ".scroll-text .step",
+        offset: 0.5,
+        debug: false,
+    })
+    .onStepEnter((response) => {
+        const { index } = response;
+
+        // Reveal sliders only in final step
+        const controls = document.querySelector(".controls-container");
+        if (index >= 55) {
+            controls.style.display = "flex";
+        } else {
+            controls.style.display = "none";
+        }
+
+        if (index >= 25 && index < 55) {
+            fixed_transform(10,10);
+        }
+
+        if (index >= 0 && index < 25) {
+            fixed_transform(50,75);
+        }
+
+        // Add your custom event logic here per index
+        console.log("Entered step:", index);
+    });
 
 // Load data when page loads
 await loadData();
