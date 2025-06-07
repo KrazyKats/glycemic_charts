@@ -391,3 +391,95 @@ nav a.active {
   max-width: 650px;
   margin: 0 auto;
 } */
+
+
+/* Guessing game styling */
+
+.guessing-game {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 20px auto;
+  max-width: 1300px;
+  flex-wrap: nowrap;
+}
+
+.guess-left {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 0 0 340px;
+  min-width: 320px;
+}
+
+.guess-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+  min-width: 400px;
+}
+
+.instructions,
+.ranking {
+  width: 100%;
+}
+
+.text-instruct {
+  font-size: 20px;
+  color: #444;
+  margin-top: 18px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* Optional: style guess-graph and guess-legend for better appearance */
+.guess-graph {
+  min-height: 220px;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.guess-legend {
+  height: 30px; /* or whatever your SVG height is */
+  overflow: hidden;
+  background: #f8fafc;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 10px;
+}
+
+/* Center the buttons and add spacing */
+.rank-buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;         /* Space between buttons */
+  margin-top: 16px;  /* Optional: space above the button row */
+}
+
+/* Add padding to the buttons for a larger click area */
+.option, .confirm-button {
+  padding: 10px 24px;
+  font-size: 1rem;
+  border-radius: 6px;
+  margin: 0; /* Remove default margin if any */
+  min-width: 100px;
+  min-height: 40px;
+  cursor: pointer;
+}
+
+/* Darken button on hover */
+.option:hover, .confirm-button:hover {
+  background-color: #d0d7de;
+}
+
+/* Add border when selected */
+.option.selected {
+  border: 2px solid #1a73e8;
+  box-shadow: 0 0 0 2px #eaf1fb;
+}
