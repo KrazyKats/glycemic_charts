@@ -241,11 +241,13 @@
 }
 
 .carb-stat {
-    border-left: 4px solid #e74c3c;
+    border-left: 10px solid #e74c3c;
+    border-right: 10px solid #e74c3c;
 }
 
 .fat-stat {
-    border-left: 4px solid #3498db;
+    border-left: 10px solid #3498db;
+    border-right: 10px solid #3498db;
 }
 
 /* Make carb slider track red */
@@ -306,7 +308,7 @@
 
 .sticky-chart {
     position: sticky;
-    top: 100px;
+    top: 60px;
 }
 
 .controls-container {
