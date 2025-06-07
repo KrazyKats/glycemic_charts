@@ -542,7 +542,7 @@ function updateChart() {
   createChart(filtered.carbData, filtered.fatData);
 }
 
-function updateChart_fixed(carbPercentile, fatPercentile) {
+function updateChart_fixed(carbPercentile, fatPercentile, options) {
   if (carbPercentile === undefined || fatPercentile === undefined) {
     carbPercentile = parseInt(carbSlider.value);
     fatPercentile = parseInt(fatSlider.value);
@@ -565,7 +565,7 @@ function updateChart_fixed(carbPercentile, fatPercentile) {
   animateNumber(avgCarbHighFat, currentCarbInFat, filtered.avgCarbHighFat);
   animateNumber(avgFatHighFat, currentFatInFat, filtered.avgFatHighFat);
 
-  createChart(filtered.carbData, filtered.fatData);
+  createChart(filtered.carbData, filtered.fatData, options);
 }
 
 async function loadData() {
@@ -626,7 +626,7 @@ async function loadData() {
 }
 
 // create button to set chart to specific carb and fat percentiles
-function fixed_transform(carbPercentile, fatPercentile) {
+function fixed_transform(carbPercentile, fatPercentile, options) {
   const actualValue_fat = getValueAtPercentile(fatPercentiles, fatPercentile);
   fatValue.textContent = `${fatPercentile}% (${actualValue_fat.toFixed(1)}g)`;
 
@@ -639,7 +639,7 @@ function fixed_transform(carbPercentile, fatPercentile) {
   )}g)`;
 
   // Update the chart with the selected percentiles
-  updateChart_fixed(carbPercentile, fatPercentile);
+  updateChart_fixed(carbPercentile, fatPercentile, options);
 
   // update the sliders to match
   carbSlider.value = carbPercentile;
@@ -662,16 +662,20 @@ scroller
     const carbEqualIndex = 4;
     const interactiveIndex = 6;
     if (index >= interactiveIndex) {
+
       controls.style.display = "flex";
     } else {
       controls.style.display = "none";
     }
     if (index < carbEqualIndex) {
-      fixed_transform(45, 72);
+      let options = { blueTitle: "Low Protein", redTitle: "High Protein" };
+      fixed_transform(45, 72, options);
+
     }
 
     if (index >= carbEqualIndex && index < interactiveIndex) {
-      fixed_transform(75, 34);
+      let options = { blueTitle: "High Carb", redTitle: "Low Carb" };
+      fixed_transform(75, 34, options);
     }
 
     // Add your custom event logic here per index
