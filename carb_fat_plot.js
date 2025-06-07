@@ -1,61 +1,114 @@
+
+import scrollama from "https://cdn.jsdelivr.net/npm/scrollama@3.2.0/+esm";
+
 // Chart dimensions
-const margin = {top: 20, right: 160, bottom: 60, left: 70};
+const margin = { top: 20, right: 200, bottom: 60, left: 70 };
 const width = 1000 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
 
 let rawData = [];
+let carbPercentiles = [];
+let fatPercentiles = [];
 
 // Get slider elements
-const carbSlider = document.getElementById('carbSlider');
-const fatSlider = document.getElementById('fatSlider');
-const carbValue = document.getElementById('carbValue');
-const fatValue = document.getElementById('fatValue');
-const carbMealCount = document.getElementById('carbMealCount');
-const fatMealCount = document.getElementById('fatMealCount');
+const carbSlider = document.getElementById("carbSlider");
+const fatSlider = document.getElementById("fatSlider");
+const carbValue = document.getElementById("carbValue");
+const fatValue = document.getElementById("fatValue");
+const carbMealCount = document.getElementById("carbMealCount");
+const fatMealCount = document.getElementById("fatMealCount");
+const avgCarbHighCarb = document.getElementById("avgCarbHighCarb");
+const avgFatHighCarb = document.getElementById("avgFatHighCarb");
+const avgCarbHighFat = document.getElementById("avgCarbHighFat");
+const avgFatHighFat = document.getElementById("avgFatHighFat");
 
 // Update display values and chart when sliders change
-carbSlider.addEventListener('input', function() {
-    carbValue.textContent = this.value + 'g';
+carbSlider.addEventListener("input", function () {
+    const percentile = parseInt(this.value);
+    const actualValue = getValueAtPercentile(carbPercentiles, percentile);
+    carbValue.textContent = `${percentile}% (${actualValue.toFixed(1)}g)`;
     updateChart();
 });
 
-fatSlider.addEventListener('input', function() {
-    fatValue.textContent = this.value + 'g';
+fatSlider.addEventListener("input", function () {
+    const percentile = parseInt(this.value);
+    const actualValue = getValueAtPercentile(fatPercentiles, percentile);
+    fatValue.textContent = `${percentile}% (${actualValue.toFixed(1)}g)`;
     updateChart();
 });
+
+function calculatePercentiles(data, field) {
+    const values = data.map((d) => d[field]).sort((a, b) => a - b);
+    const percentiles = [];
+
+    for (let p = 0; p <= 100; p++) {
+        const index = (p / 100) * (values.length - 1);
+        if (index === Math.floor(index)) {
+            percentiles[p] = values[index];
+        } else {
+            const lower = values[Math.floor(index)];
+            const upper = values[Math.ceil(index)];
+            percentiles[p] = lower + (upper - lower) * (index - Math.floor(index));
+        }
+    }
+
+    return percentiles;
+}
+
+function getValueAtPercentile(percentiles, percentile) {
+    return percentiles[percentile] || 0;
+}
 
 function aggregateData(data, timeInterval = 5) {
     // Group data by time_after_meal_minutes (rounded to nearest interval)
-    const grouped = d3.group(data, d => Math.round(d.time_after_meal_minutes / timeInterval) * timeInterval);
+    const grouped = d3.group(
+        data,
+        (d) => Math.round(d.time_after_meal_minutes / timeInterval) * timeInterval
+    );
 
     const aggregatedData = [];
 
     grouped.forEach((timePoints, timeAfterMeal) => {
-        const meanGlucoseDiff = d3.mean(timePoints, d => d.glucose_diff);
-        const meanGlucose = d3.mean(timePoints, d => d.glucose);
-        const meanPreMealGlucose = d3.mean(timePoints, d => d.pre_meal_glucose);
+        const meanGlucoseDiff = d3.mean(timePoints, (d) => d.glucose_diff);
+        const meanGlucose = d3.mean(timePoints, (d) => d.glucose);
+        const meanPreMealGlucose = d3.mean(timePoints, (d) => d.pre_meal_glucose);
 
         aggregatedData.push({
             time_after_meal_minutes: timeAfterMeal,
             glucose_diff: meanGlucoseDiff,
             glucose: meanGlucose,
             pre_meal_glucose: meanPreMealGlucose,
-            count: timePoints.length
+            count: timePoints.length,
         });
     });
 
-    return aggregatedData.sort((a, b) => a.time_after_meal_minutes - b.time_after_meal_minutes);
+    return aggregatedData.sort(
+        (a, b) => a.time_after_meal_minutes - b.time_after_meal_minutes
+    );
 }
 
-function filterData(data, minCarb, minFat) {
-    const carbData = data.filter(d => d.total_carb >= minCarb);
-    const fatData = data.filter(d => d.protein >= minFat);
+function filterData(data, carbPercentile, fatPercentile) {
+    const minCarb = getValueAtPercentile(carbPercentiles, carbPercentile);
+    const minFat = getValueAtPercentile(fatPercentiles, fatPercentile);
+
+    const carbData = data.filter((d) => d.total_carb >= minCarb);
+    const fatData = data.filter((d) => d.protein >= minFat);
+    const avgCarbHighFat = d3.mean(fatData, (d) => d.total_carb);
+    const avgFatHighCarb = d3.mean(carbData, (d) => d.protein);
+    const avgFatHighFat = d3.mean(fatData, (d) => d.protein);
+    const avgCarbHighCarb = d3.mean(carbData, (d) => d.total_carb);
+
+    // console.log(carbInHighFat, fatInHighCarb, carbInHighCarb, fatInHighFat);
 
     return {
         carbData: aggregateData(carbData),
         fatData: aggregateData(fatData),
-        carbMealCount: new Set(carbData.map(d => d.food_time)).size,
-        fatMealCount: new Set(fatData.map(d => d.food_time)).size
+        carbMealCount: new Set(carbData.map((d) => d.food_time)).size,
+        fatMealCount: new Set(fatData.map((d) => d.food_time)).size,
+        avgCarbHighCarb: avgCarbHighCarb || 0,
+        avgFatHighCarb: avgFatHighCarb || 0,
+        avgCarbHighFat: avgCarbHighFat || 0,
+        avgFatHighFat: avgFatHighFat || 0,
     };
 }
 
@@ -64,16 +117,20 @@ let svg, g, tooltip;
 
 function initializeChart() {
     // Create SVG only once
-    svg = d3.select("#chart_fat_carb")
+    svg = d3
+        .select("#chart_fat_carb")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
-    g = svg.append("g")
+    g = svg
+        .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Create tooltip only once
-    tooltip = d3.select("body").append("div")
+    tooltip = d3
+        .select("body")
+        .append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
@@ -107,12 +164,14 @@ function createChart(carbData, fatData) {
     const allData = [...carbData, ...fatData];
 
     // Create scales
-    const xScale = d3.scaleLinear()
-        .domain(d3.extent(allData, d => d.time_after_meal_minutes))
+    const xScale = d3
+        .scaleLinear()
+        .domain(d3.extent(allData, (d) => d.time_after_meal_minutes))
         .range([0, width]);
 
-    const yScale = d3.scaleLinear()
-        .domain(d3.extent(allData, d => d.glucose_diff))
+    const yScale = d3
+        .scaleLinear()
+        .domain(d3.extent(allData, (d) => d.glucose_diff))
         .nice()
         .range([height, 0]);
 
@@ -127,18 +186,12 @@ function createChart(carbData, fatData) {
         .attr("transform", `translate(0,${height})`)
         .transition()
         .duration(duration)
-        .call(d3.axisBottom(xScale)
-            .tickSize(-height)
-            .tickFormat("")
-        );
+        .call(d3.axisBottom(xScale).tickSize(-height).tickFormat(""));
 
     g.select(".y-grid")
         .transition()
         .duration(duration)
-        .call(d3.axisLeft(yScale)
-            .tickSize(-width)
-            .tickFormat("")
-        );
+        .call(d3.axisLeft(yScale).tickSize(-width).tickFormat(""));
 
     // Update zero line with animation
     g.select(".zero-line")
@@ -170,16 +223,19 @@ function createChart(carbData, fatData) {
         .text("Meal Time");
 
     // Line generator
-    const line = d3.line()
-        .x(d => xScale(d.time_after_meal_minutes))
-        .y(d => yScale(d.glucose_diff))
+    const line = d3
+        .line()
+        .x((d) => xScale(d.time_after_meal_minutes))
+        .y((d) => yScale(d.glucose_diff))
         .curve(d3.curveMonotoneX);
 
     // Animate carb line and points
-    const carbLine = g.selectAll(".carb-line")
+    const carbLine = g
+        .selectAll(".carb-line")
         .data(carbData.length > 0 ? [carbData] : []);
 
-    carbLine.enter()
+    carbLine
+        .enter()
         .append("path")
         .attr("class", "line carb-line")
         .style("opacity", 0)
@@ -189,42 +245,40 @@ function createChart(carbData, fatData) {
         .style("opacity", 1)
         .attr("d", line);
 
-    carbLine.exit()
-        .transition()
-        .duration(duration)
-        .style("opacity", 0)
-        .remove();
+    carbLine.exit().transition().duration(duration).style("opacity", 0).remove();
 
     // Animate carb dots
-    const carbDots = g.selectAll(".carb-dot")
-        .data(carbData, d => d.time_after_meal_minutes);
+    const carbDots = g
+        .selectAll(".carb-dot")
+        .data(carbData, (d) => d.time_after_meal_minutes);
 
-    carbDots.enter()
+    carbDots
+        .enter()
         .append("circle")
         .attr("class", "dot carb-dot")
         .attr("r", 3)
-        .attr("cx", d => xScale(d.time_after_meal_minutes))
-        .attr("cy", d => yScale(d.glucose_diff))
+        .attr("cx", (d) => xScale(d.time_after_meal_minutes))
+        .attr("cy", (d) => yScale(d.glucose_diff))
         .style("opacity", 0)
-        .on("mouseover", function(event, d) {
-            tooltip.transition()
-                .duration(200)
-                .style("opacity", .9);
-            tooltip.html(`
+        .on("mouseover", function (event, d) {
+            tooltip.transition().duration(200).style("opacity", 0.9);
+            tooltip
+                .html(
+                    `
                 <strong>High Carb Meals</strong><br/>
                 Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
-                Glucose Diff: ${d.glucose_diff > 0 ? '+' : ''}${d.glucose_diff.toFixed(1)} mg/dL<br/>
+                Glucose Diff: ${d.glucose_diff > 0 ? "+" : ""
+                    }${d.glucose_diff.toFixed(1)} mg/dL<br/>
                 Current: ${d.glucose.toFixed(1)} mg/dL<br/>
                 Pre-meal: ${d.pre_meal_glucose.toFixed(1)} mg/dL<br/>
                 Data points: ${d.count}
-            `)
-                .style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 28) + "px");
+            `
+                )
+                .style("left", event.pageX + 10 + "px")
+                .style("top", event.pageY - 28 + "px");
         })
-        .on("mouseout", function() {
-            tooltip.transition()
-                .duration(500)
-                .style("opacity", 0);
+        .on("mouseout", function () {
+            tooltip.transition().duration(500).style("opacity", 0);
         })
         .transition()
         .duration(duration)
@@ -232,12 +286,14 @@ function createChart(carbData, fatData) {
         .attr("r", 4)
         .style("opacity", 1);
 
-    carbDots.transition()
+    carbDots
+        .transition()
         .duration(duration)
-        .attr("cx", d => xScale(d.time_after_meal_minutes))
-        .attr("cy", d => yScale(d.glucose_diff));
+        .attr("cx", (d) => xScale(d.time_after_meal_minutes))
+        .attr("cy", (d) => yScale(d.glucose_diff));
 
-    carbDots.exit()
+    carbDots
+        .exit()
         .transition()
         .duration(duration)
         .attr("r", 0)
@@ -245,10 +301,12 @@ function createChart(carbData, fatData) {
         .remove();
 
     // Animate fat line and points
-    const fatLine = g.selectAll(".fat-line")
+    const fatLine = g
+        .selectAll(".fat-line")
         .data(fatData.length > 0 ? [fatData] : []);
 
-    fatLine.enter()
+    fatLine
+        .enter()
         .append("path")
         .attr("class", "line fat-line")
         .style("opacity", 0)
@@ -258,42 +316,40 @@ function createChart(carbData, fatData) {
         .style("opacity", 1)
         .attr("d", line);
 
-    fatLine.exit()
-        .transition()
-        .duration(duration)
-        .style("opacity", 0)
-        .remove();
+    fatLine.exit().transition().duration(duration).style("opacity", 0).remove();
 
     // Animate fat dots
-    const fatDots = g.selectAll(".fat-dot")
-        .data(fatData, d => d.time_after_meal_minutes);
+    const fatDots = g
+        .selectAll(".fat-dot")
+        .data(fatData, (d) => d.time_after_meal_minutes);
 
-    fatDots.enter()
+    fatDots
+        .enter()
         .append("circle")
         .attr("class", "dot fat-dot")
         .attr("r", 0)
-        .attr("cx", d => xScale(d.time_after_meal_minutes))
-        .attr("cy", d => yScale(d.glucose_diff))
+        .attr("cx", (d) => xScale(d.time_after_meal_minutes))
+        .attr("cy", (d) => yScale(d.glucose_diff))
         .style("opacity", 0)
-        .on("mouseover", function(event, d) {
-            tooltip.transition()
-                .duration(200)
-                .style("opacity", .9);
-            tooltip.html(`
+        .on("mouseover", function (event, d) {
+            tooltip.transition().duration(200).style("opacity", 0.9);
+            tooltip
+                .html(
+                    `
                 <strong>High Protein Meals</strong><br/>
                 Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
-                Glucose Diff: ${d.glucose_diff > 0 ? '+' : ''}${d.glucose_diff.toFixed(1)} mg/dL<br/>
+                Glucose Diff: ${d.glucose_diff > 0 ? "+" : ""
+                    }${d.glucose_diff.toFixed(1)} mg/dL<br/>
                 Current: ${d.glucose.toFixed(1)} mg/dL<br/>
                 Pre-meal: ${d.pre_meal_glucose.toFixed(1)} mg/dL<br/>
                 Data points: ${d.count}
-            `)
-                .style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 28) + "px");
+            `
+                )
+                .style("left", event.pageX + 10 + "px")
+                .style("top", event.pageY - 28 + "px");
         })
-        .on("mouseout", function() {
-            tooltip.transition()
-                .duration(500)
-                .style("opacity", 0);
+        .on("mouseout", function () {
+            tooltip.transition().duration(500).style("opacity", 0);
         })
         .transition()
         .duration(duration)
@@ -301,12 +357,14 @@ function createChart(carbData, fatData) {
         .attr("r", 4)
         .style("opacity", 1);
 
-    fatDots.transition()
+    fatDots
+        .transition()
         .duration(duration)
-        .attr("cx", d => xScale(d.time_after_meal_minutes))
-        .attr("cy", d => yScale(d.glucose_diff));
+        .attr("cx", (d) => xScale(d.time_after_meal_minutes))
+        .attr("cy", (d) => yScale(d.glucose_diff));
 
-    fatDots.exit()
+    fatDots
+        .exit()
         .transition()
         .duration(duration)
         .attr("r", 0)
@@ -320,60 +378,81 @@ function createChart(carbData, fatData) {
         .duration(duration)
         .call(d3.axisBottom(xScale));
 
-    g.select(".y-axis")
-        .transition()
-        .duration(duration)
-        .call(d3.axisLeft(yScale));
+    g.select(".y-axis").transition().duration(duration).call(d3.axisLeft(yScale));
 
     // Update axis labels
     g.select(".y-label")
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left)
-        .attr("x", 0 - (height / 2))
+        .attr("x", 0 - height / 2)
         .attr("dy", "1em")
         .style("text-anchor", "middle")
         .text("Glucose Difference from Pre-meal (mg/dL)");
 
     g.select(".x-label")
-        .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 10})`)
+        .attr(
+            "transform",
+            `translate(${width / 2}, ${height + margin.bottom - 10})`
+        )
         .style("text-anchor", "middle")
         .text("Time After Meal (minutes)");
 
     // Update legend with animation
     const legendData = [];
     if (carbData.length > 0) {
-        legendData.push({label: `High Carb (≥${carbSlider.value}g)`, color: '#e74c3c'});
+        const carbPercentile = parseInt(carbSlider.value);
+        const carbActualValue = getValueAtPercentile(
+            carbPercentiles,
+            carbPercentile
+        );
+        legendData.push({
+            label: `High Carb (≥${carbPercentile}% / ${carbActualValue.toFixed(1)}g)`,
+            color: "#e74c3c",
+        });
     }
     if (fatData.length > 0) {
-        legendData.push({label: `High Protein (≥${fatSlider.value}g)`, color: '#3498db'});
+        const fatPercentile = parseInt(fatSlider.value);
+        const fatActualValue = getValueAtPercentile(fatPercentiles, fatPercentile);
+        legendData.push({
+            label: `High Protein (≥${fatPercentile}% / ${fatActualValue.toFixed(
+                1
+            )}g)`,
+            color: "#3498db",
+        });
     }
 
-    const legend = g.select(".legend")
+    const legend = g
+        .select(".legend")
         .attr("transform", `translate(${width + 10}, 40)`);
 
-    const legendItems = legend.selectAll(".legend-item")
-        .data(legendData, d => d.label);
+    const legendItems = legend
+        .selectAll(".legend-item")
+        .data(legendData, (d) => d.label);
 
-    const legendEnter = legendItems.enter()
+    const legendEnter = legendItems
+        .enter()
         .append("g")
         .attr("class", "legend-item")
         .style("opacity", 0);
 
-    legendEnter.append("line")
+    legendEnter
+        .append("line")
         .attr("x1", 0)
         .attr("x2", 20)
         .attr("y1", 0)
         .attr("y2", 0)
         .style("stroke-width", 3);
 
-    legendEnter.append("circle")
+    legendEnter
+        .append("circle")
         .attr("cx", 10)
         .attr("cy", 0)
         .attr("r", 4)
         .style("stroke", "white")
         .style("stroke-width", 2);
 
-    legendEnter.append("text")
+    legendEnter
+        .append("text")
         .attr("x", 30)
         .attr("y", 0)
         .attr("dy", "0.35em")
@@ -381,27 +460,32 @@ function createChart(carbData, fatData) {
 
     const legendUpdate = legendEnter.merge(legendItems);
 
-    legendUpdate.transition()
+    legendUpdate
+        .transition()
         .duration(duration)
         .style("opacity", 1)
         .attr("transform", (d, i) => `translate(0, ${i * 25})`);
 
-    legendUpdate.select("line")
+    legendUpdate
+        .select("line")
         .transition()
         .duration(duration)
-        .style("stroke", d => d.color);
+        .style("stroke", (d) => d.color);
 
-    legendUpdate.select("circle")
+    legendUpdate
+        .select("circle")
         .transition()
         .duration(duration)
-        .style("fill", d => d.color);
+        .style("fill", (d) => d.color);
 
-    legendUpdate.select("text")
+    legendUpdate
+        .select("text")
         .transition()
         .duration(duration)
-        .text(d => d.label);
+        .text((d) => d.label);
 
-    legendItems.exit()
+    legendItems
+        .exit()
         .transition()
         .duration(duration)
         .style("opacity", 0)
@@ -424,64 +508,156 @@ function animateNumber(element, from, to, duration = 500) {
 }
 
 function updateChart() {
-    const minCarb = parseFloat(carbSlider.value);
-    const minFat = parseFloat(fatSlider.value);
+    const carbPercentile = parseInt(carbSlider.value);
+    const fatPercentile = parseInt(fatSlider.value);
 
-    const filtered = filterData(rawData, minCarb, minFat);
+    const filtered = filterData(rawData, carbPercentile, fatPercentile);
 
     // Animate meal counts
     const currentCarbCount = parseInt(carbMealCount.textContent) || 0;
     const currentFatCount = parseInt(fatMealCount.textContent) || 0;
+    const currentCarbInCarb = parseFloat(avgCarbHighCarb.textContent) || 0;
+    const currentFatInCarb = parseFloat(avgFatHighCarb.textContent) || 0;
+    const currentCarbInFat = parseFloat(avgCarbHighFat.textContent) || 0;
+    const currentFatInFat = parseFloat(avgFatHighFat.textContent) || 0;
 
     animateNumber(carbMealCount, currentCarbCount, filtered.carbMealCount);
     animateNumber(fatMealCount, currentFatCount, filtered.fatMealCount);
+    animateNumber(avgCarbHighCarb, currentCarbInCarb, filtered.avgCarbHighCarb);
+    animateNumber(avgFatHighCarb, currentFatInCarb, filtered.avgFatHighCarb);
+    animateNumber(avgCarbHighFat, currentCarbInFat, filtered.avgCarbHighFat);
+    animateNumber(avgFatHighFat, currentFatInFat, filtered.avgFatHighFat);
 
     createChart(filtered.carbData, filtered.fatData);
 }
 
-function loadData() {
-    d3.csv('./website_data/line_plot_differences.csv')
-        .then(function(data) {
-            // Process the data
-            data.forEach(d => {
-                d.patient_id = +d.patient_id;
-                d.glucose = +d.glucose;
-                d.time_after_meal = +d.time_after_meal;
-                d.time_after_meal_minutes = d.time_after_meal / 60;
-                d.pre_meal_glucose = +d.pre_meal_glucose;
-                d.glucose_diff = +d.glucose_diff;
-                d.total_carb = +d.total_carb;
-                d.total_fat = +d.total_fat;
-                d.calorie = +d.calorie;
-                d.protein = +d.protein;
-                d.sugar = +d.sugar;
-                d.dietary_fiber = +d.dietary_fiber;
-            });
+function updateChart_fixed(carbPercentile, fatPercentile) {
+    if (carbPercentile === undefined || fatPercentile === undefined) {
+        carbPercentile = parseInt(carbSlider.value);
+        fatPercentile = parseInt(fatSlider.value);
+    }
 
-            rawData = data;
+    const filtered = filterData(rawData, carbPercentile, fatPercentile);
 
-            // Set slider ranges based on data
-            const maxCarb = d3.max(data, d => d.total_carb);
-            const maxFat = d3.max(data, d => d.protein);
+    // Animate meal counts
+    const currentCarbCount = parseInt(carbMealCount.textContent) || 0;
+    const currentFatCount = parseInt(fatMealCount.textContent) || 0;
+    const currentCarbInCarb = parseFloat(avgCarbHighCarb.textContent) || 0;
+    const currentFatInCarb = parseFloat(avgFatHighCarb.textContent) || 0;
+    const currentCarbInFat = parseFloat(avgCarbHighFat.textContent) || 0;
+    const currentFatInFat = parseFloat(avgFatHighFat.textContent) || 0;
 
-            carbSlider.max = Math.ceil(maxCarb);
-            fatSlider.max = Math.ceil(maxFat);
+    animateNumber(carbMealCount, currentCarbCount, filtered.carbMealCount);
+    animateNumber(fatMealCount, currentFatCount, filtered.fatMealCount);
+    animateNumber(avgCarbHighCarb, currentCarbInCarb, filtered.avgCarbHighCarb);
+    animateNumber(avgFatHighCarb, currentFatInCarb, filtered.avgFatHighCarb);
+    animateNumber(avgCarbHighFat, currentCarbInFat, filtered.avgCarbHighFat);
+    animateNumber(avgFatHighFat, currentFatInFat, filtered.avgFatHighFat);
 
-            updateChart();
-        })
-        .catch(function(error) {
-            console.error('Error loading CSV file:', error);
-            d3.select("#chart_fat_carb").html(`
-                <div class="error-message">
-                    <h3>Error loading data file</h3>
-                    <p>Could not load './website_data/line_plot_differences.csv'</p>
-                    <p>Please check that the file exists in the correct location.</p>
-                </div>
-            `);
-        });
+    createChart(filtered.carbData, filtered.fatData);
 }
 
+
+async function loadData() {
+    try {
+        const data = await d3.csv("./website_data/line_plot_differences.csv");
+
+        // Process the data
+        data.forEach((d) => {
+            d.patient_id = +d.patient_id;
+            d.glucose = +d.glucose;
+            d.time_after_meal = +d.time_after_meal;
+            d.time_after_meal_minutes = d.time_after_meal / 60;
+            d.pre_meal_glucose = +d.pre_meal_glucose;
+            d.glucose_diff = +d.glucose_diff;
+            d.total_carb = +d.total_carb;
+            d.protein = +d.protein;
+        });
+        rawData = data;
+
+        // Calculate percentiles for both carbs and protein
+        carbPercentiles = calculatePercentiles(data, "total_carb");
+        fatPercentiles = calculatePercentiles(data, "protein");
+
+        // Set slider ranges to percentiles (0-100)
+        const startingFat = 76;
+        const startingCarb = 50;
+
+        carbSlider.min = 0;
+        carbSlider.max = 100;
+        carbSlider.value = startingCarb; // Start at median
+
+        fatSlider.min = 0;
+        fatSlider.max = 100;
+        fatSlider.value = startingFat;
+
+        // Initialize display values
+        const initialCarbValue = getValueAtPercentile(carbPercentiles, startingCarb);
+        const initialFatValue = getValueAtPercentile(fatPercentiles, startingFat);
+        carbValue.textContent = `${startingCarb}% (${initialCarbValue.toFixed(1)}g)`;
+        fatValue.textContent = `${startingFat}% (${initialFatValue.toFixed(1)}g)`;
+
+        updateChart();
+    } catch (error) {
+        console.error("Error loading CSV file:", error);
+        d3.select("#chart_fat_carb").html(`
+            <div class="error-message">
+                <h3>Error loading data file</h3>
+                <p>Could not load './website_data/line_plot_differences.csv'</p>
+                <p>Please check that the file exists in the correct location.</p>
+            </div>
+        `);
+    }
+}
+
+// create button to set chart to specific carb and fat percentiles
+function fixed_transform(carbPercentile, fatPercentile) {
+
+    const actualValue_fat = getValueAtPercentile(fatPercentiles, fatPercentile);
+    fatValue.textContent = `${fatPercentile}% (${actualValue_fat.toFixed(1)}g)`;
+
+    const actualValue_carb = getValueAtPercentile(carbPercentiles, carbPercentile);
+    carbValue.textContent = `${carbPercentile}% (${actualValue_carb.toFixed(1)}g)`;
+
+    // Update the chart with the selected percentiles
+    updateChart_fixed(carbPercentile, fatPercentile);
+
+    // update the sliders to match
+    carbSlider.value = carbPercentile;
+    fatSlider.value = fatPercentile;
+}
+
+
+const scroller = scrollama();
+
+scroller
+    .setup({
+        step: ".scroll-text .step",
+        offset: 0.5,
+        debug: false,
+    })
+    .onStepEnter((response) => {
+        const { index } = response;
+
+        // Reveal sliders only in final step
+        const controls = document.querySelector(".controls-container");
+        if (index >= 55) {
+            controls.style.display = "flex";
+        } else {
+            controls.style.display = "none";
+        }
+
+        if (index >= 25 && index < 55) {
+            fixed_transform(10,10);
+        }
+
+        if (index >= 0 && index < 25) {
+            fixed_transform(50,75);
+        }
+
+        // Add your custom event logic here per index
+        console.log("Entered step:", index);
+    });
+
 // Load data when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    loadData();
-});
+await loadData();

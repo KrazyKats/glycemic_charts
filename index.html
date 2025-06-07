@@ -4,18 +4,23 @@
 <head>
   <meta charset="UTF-8" />
   <title>Dashboard Overview</title>
-  <link rel="stylesheet" href="interactive_style.css">
+  <link rel="stylesheet" href="interactive_style.css" />
   <link rel="stylesheet" href="global_style.css" />
   <link rel="stylesheet" href="stabilize_style.css" />
-  <link rel="stylesheet" href="style.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="guessing-game.js" type="module"></script>
-  </head>
-  <body>
-    <header>
-      <h1>Project Dashboard</h1>
-      <p>A Visual Overview of Key Metrics and Trends</p>
-    </header>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="and-bars.js" type="module"></script>
+  <script src="intro.js" type="module"></script>
+  <script src="glucose-plot.js" type="module"></script>
+  <script src="stabilize_bar_plot.js" type="module"></script>
+  <script src="carb_fat_plot.js" type="module"></script>
+</head>
+
+<body>
+  <header>
+    <h1>Glycemic Comparisons</h1>
+    <p>A Visual Overview of Blood Sugar Level Changes With Proteins and Carbs</p>
+  </header>
 
   <main>
     <nav>
@@ -29,15 +34,18 @@
     <section id="glucose-intro" class="chart-legend-container">
       <!-- Chart container -->
       <div class="intro-chart">
-        <h2 class="intro-title">Not All Meals Are Created Equal</h2>
+        <h2 class="intro-title">Different Meals Can Have Vastly Different Blood Glucose Spikes</h2>
 
         <svg id="intro-viz"></svg>
 
         <p class="intro-description">
-          Some meals spike your blood sugar by a lot. Other meals, not so
-          much. It varies from person to person. And it varies based on a
-          bunch of factors. One particular (and perhaps intuitive) factor that
-          influences glucose response to a meal is its
+          Blood Sugar Spikes, when your blood sugar suddenly jumps – typically
+          after a meal – can be harmful for your kidneys and heart and can
+          impact your mood and energy levels. Some meals spike your blood
+          sugar by a lot. Other meals, not so much. It varies from person to
+          person. And it varies based on a bunch of factors. One particular
+          (and perhaps intuitive) factor that influences glucose response to a
+          meal is its
           <strong>macronutrient content</strong>.
         </p>
 
@@ -51,14 +59,12 @@
         <div class="legend-entry">
           <div class="legend-header">
             <span class="legend-dot red-dot"></span>
-            <span class="legend-participant">Participant 12</span>
+            <span class="legend-participant">Participant 11</span>
           </div>
           <div class="meal-card">
             <div>Meal:</div>
             <ul>
-              <li>🍗 Chicken Gyro</li>
-              <li>🍟 Fries</li>
-              <li>🥤 Diet Pepsi</li>
+              <li>🍩 Cinnamon Rolls</li>
             </ul>
           </div>
         </div>
@@ -66,13 +72,12 @@
         <div class="legend-entry">
           <div class="legend-header">
             <span class="legend-dot blue-dot"></span>
-            <span class="legend-participant">Participant 10</span>
+            <span class="legend-participant">Participant 4</span>
           </div>
           <div class="meal-card">
             <div>Meal:</div>
             <ul>
-              <li>🥓 Bacon</li>
-              <li>🍳 Egg</li>
+              <li>🦃 Turkey Wings</li>
             </ul>
           </div>
         </div>
@@ -108,43 +113,177 @@
       </section>
 
     <!-- For intro time series -->
-    <div id="intro-tooltip" class="tooltip" style="opacity: 0"></div>
+    <div id="intro-tooltip" class="tooltip"></div>
 
-    <section id="and-carb-chart" class="chart-section">
-      <h2>Average Glucose Spike by Carb Bins</h2>
-      <svg></svg>
+    <section class="chart-section">
+      <h2 class="subheader">
+        High Carb Meals Are Typically Followed With High Blood Sugar Spikes
+      </h2>
+      <div class="chart-row">
+        <div class="chart-description">
+          <p>
+            As expected, higher carbohydrate meals are consistently correlated
+            with higher blood sugar spikes. Only one bin is smaller than the
+            previous bin, and this is most likely due to random noise since
+            our data has a small sample size.
+          </p>
+        </div>
+        <div class="chart-visual carb-plot">
+          <svg id="and-carb-chart" class="chart-section"></svg>
+        </div>
+      </div>
     </section>
 
-    <section id="and-protein-chart" class="chart-section">
-      <h2>Average Glucose Spike by Protein Bins</h2>
-      <svg></svg>
+    <section class="chart-section">
+      <h2 class="subheader">
+        High Protein Meals Have Less Pronounced Blood Sugar Spikes than High
+        Carb Meals
+      </h2>
+      <div class="chart-row">
+        <div class="chart-description">
+          <p>
+            Meals that are higher in protein also have a jump, but this jump
+            is substantially less pronounced. This jump is partially because higher
+            protein meals also have higher carbohydrates, on average. We will explore this
+            further.
+          </p>
+        </div>
+        <div class="chart-visual protein-plot">
+          <svg id="and-protein-chart" class="chart-section"></svg>
+        </div>
+      </div>
     </section>
 
     <!-- For bar chart hover -->
     <div id="bar-tooltip" class="tooltip" style="opacity: 0"></div>
 
     <!-- Quy-Dzu's part please do not disturb the spaghetti -->
-
-    <section>
-      <h2>IDIOT VILLE</h2>
-      <div id="chart"></div>
+    <section class="chart-section">
+      <h2 class="subheader">
+        High Carbohydrate Meals Have Blood Sugar Rapidly Reduce After Peaking
+      </h2>
+      <div class="chart-row">
+        <div class="chart-description">
+          <p>
+            The highest blood sugar spike is only one metric to consider the
+            different results of using different meal types. Another
+            reasonable thing to consider is how much the blood sugar drops
+            from its peak 2 hours after the meal. We can see that higher
+            carbohydrate meals also have the blood sugar levels drop down most
+            quickly. These rapid ups and downs are problematic.
+          </p>
+        </div>
+        <div class="chart-visual carb-plot">
+          <div id="carb_stabilize_chart" class="stabilize"></div>
+        </div>
+      </div>
     </section>
 
-    <section>
-      <h2>IDIOT VILLE2</h2>
+    <section class="chart-section">
+      <h2 class="subheader">
+        High Protein Meals Have Blood Sugar Slightly Increase After Peaking
+      </h2>
+      <div class="chart-row">
+        <div class="chart-description">
+          <p>
+            We do not see much of a correlation between high protein and the glucose stabilization after a meal.
+            However, this is partially because these high-protein meals are also more likely to have a higher
+            carbohydrate
+            content. Let's explore this further.
+          </p>
+        </div>
+        <div class="chart-visual protein-plot">
+          <div id="protein_stabilize_chart" class="stabilize"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- <section>
+      <h2>IDIOT VILLE</h2>
+      <div id="chart"></div>
+    </section> -->
+
+  <div class="scroll-wrapper">
+    <div class="scroll-text">
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+      <div class="step">🧬 Here's how blood sugar changes after high-carb meals.</div>
+      <div class="step">🍗 Here's what happens with protein-rich meals.</div>
+      <div class="step">📈 Look at the trends together in the combined graph.</div>
+      <div class="step">🎛️ Now you try! Adjust the sliders below to explore.</div>
+    </div>
+
+    <div class="scroll-graphic">
+      <div class="sticky-chart">
+      <h2>Average Blood Sugar Change After High Carb and High Protein Meals</h2>
       <div class="chart-container-fat-carb">
         <div class="controls-container">
           <div class="slider-group">
-            <div class="slider-label">Minimum Carbohydrates (g)</div>
+            <div class="slider-label">Minimum Carbohydrates Percentile</div>
             <div class="slider-container">
-              <input type="range" id="carbSlider" class="slider" min="0" max="100" value="20" step="5">
+              <input type="range" id="carbSlider" class="slider" min="0" max="100" value="20" step="5" />
               <div class="value-display" id="carbValue">20g</div>
             </div>
           </div>
           <div class="slider-group">
-            <div class="slider-label">Minimum Total Protein (g)</div>
+            <div class="slider-label">Minimum Protein Percentile</div>
             <div class="slider-container">
-              <input type="range" id="fatSlider" class="slider" min="0" max="50" value="10" step="2">
+              <input type="range" id="fatSlider" class="slider" min="0" max="50" value="10" step="2" />
               <div class="value-display" id="fatValue">10g</div>
             </div>
           </div>
@@ -155,39 +294,36 @@
             <div class="stat-label">High Carb Meals</div>
             <div class="stat-value" id="carbMealCount">0</div>
           </div>
+          <div class="stat-box carb-stat">
+            <div class="stat-label">Average Carb Content</div>
+            <div class="stat-value" id="avgCarbHighCarb">0</div>
+          </div>
+          <div class="stat-box carb-stat">
+            <div class="stat-label">Average Protein Content</div>
+            <div class="stat-value" id="avgFatHighCarb">0</div>
+          </div>
           <div class="stat-box fat-stat">
             <div class="stat-label">High Protein Meals</div>
             <div class="stat-value" id="fatMealCount">0</div>
           </div>
+          <div class="stat-box fat-stat">
+            <div class="stat-label">Average Carb Content</div>
+            <div class="stat-value" id="avgCarbHighFat">0</div>
+          </div>
+          <div class="stat-box fat-stat">
+            <div class="stat-label">Average Protein Content</div>
+            <div class="stat-value" id="avgFatHighFat">0</div>
+          </div>
         </div>
 
         <div id="chart_fat_carb"></div>
+
+        </div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- End of Quy-Dzu Spaghetti -->
-
-
-    <section>
-      <h2>Chart 4: Comparative Metrics</h2>
-      <div class="chart-container stabilize">
-        <div id="carb_stabilize_chart"></div>
-      </div>
-
-      <p>This section compares multiple variables or groups in Chart 4.</p>
-    </section>
-
-    <section>
-      <h2>Chart 5: Insights & Anomalies</h2>
-      <div class="chart-container stabilize">
-        <div id="protein_stabilize_chart"></div>
-        <p>
-          This section highlights notable findings and outliers found in Chart
-          5.
-        </p>
-      </div>
-    </section>
-  </main>
+  <!-- End of Quy-Dzu Spaghetti -->
 
   <script>
     const observer = new IntersectionObserver(
@@ -208,11 +344,6 @@
       observer.observe(section);
     });
   </script>
-  <script src="and-bars.js" type="module"></script>
-  <script src="intro.js" type="module"></script>
-  <script src="glucose-plot.js" type="module"></script>
-  <script src="stabilize_bar_plot.js" type="module"></script>
-  <script src="carb_fat_plot.js" type="module"></script>
 </body>
 
 </html>

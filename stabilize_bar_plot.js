@@ -1,15 +1,7 @@
-/* Function one -- parse_csv(): takes in a CSV file and returns the data needed as an object
-I can allow filtering for this function if I want to
-Perhaps have optional parameters for the bins of carbs, proteins, etc.
-By default, use the bins that I'm currently using
-
-Function two -- create_bar_plot(): Uses d3 to create the bar plots for proteins and carbs
-I can share mos t of the logic of these two functions
- */
+// Creates Bar Plots for Stabilization
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm";
 function bin_data(data, bins, labels, bin_by) {
   // Output an object mapping bin to average stabilize value
-  // In order to compute the average by category, I can compute a sum and a count
   function get_bin_label(value) {
     // Assume bins are sorted in descending order by amounts and no values are lower than smallest bin
     for (const [index, bin] of bins.entries()) {
@@ -20,7 +12,7 @@ function bin_data(data, bins, labels, bin_by) {
   }
   const groupedData = d3.rollup(
     data,
-    (v) => d3.mean(v, (d) => d.stabilize),
+    (v) => d3.mean(v, (d) => -d["stabilize"]),
     (d) => get_bin_label(d[bin_by])
   );
   return groupedData;
@@ -36,28 +28,81 @@ async function loadCSVData(filePath) {
   }
 }
 
+function wrapText(text, width) {
+  text.each(function () {
+    const text = d3.select(this);
+    const words = text.text().split(/\s+/).reverse();
+    let word;
+    let line = [];
+    let lineNumber = 0;
+    const lineHeight = 1.1; // ems
+    const y = text.attr("y");
+    const dy = 0;
+
+    let tspan = text
+      .text(null)
+      .append("tspan")
+      .attr("x", text.attr("x"))
+      .attr("y", y)
+      .attr("dy", dy + "em");
+
+    while ((word = words.pop())) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width && line.length > 1) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text
+          .append("tspan")
+          .attr("x", text.attr("x"))
+          .attr("y", y)
+          .attr("dy", ++lineNumber * lineHeight + dy + "em")
+          .text(word);
+      }
+    }
+  });
+}
+
 function createStabilizationChart(data, containerId, options) {
   // Clear existing chart
   d3.select(`#${containerId}`).selectAll("*").remove();
 
   // Dimensions and margins
-  const margin = { top: 80, right: 150, bottom: 80, left: 80 };
-  const width = 800 - margin.left - margin.right;
-  const height = 500 - margin.top - margin.bottom;
+  const margin = { top: 60, right: 150, bottom: 80, left: 80 };
+  // const width = 800 - margin.left - margin.right;
+  // const height = 500 - margin.top - margin.bottom;
+
+  const width = 1000 - margin.left - margin.right;
+  const height = 600 - margin.top - margin.bottom;
+
 
   // Create tooltip
   const tooltip = d3.select("body").append("div").attr("class", "tooltip");
 
   // Create SVG
+  // const svg = d3
+  //   .select(`#${containerId}`)
+  //   .append("svg")
+  //   .attr("width", width + margin.left + margin.right)
+  //   .attr("height", height + margin.top + margin.bottom);
+
+  // const g = svg
+  //   .append("g")
+  //   .attr("transform", `translate(${margin.left},${margin.top})`);
+
   const svg = d3
     .select(`#${containerId}`)
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
+    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("width", "100%")
+    .style("height", "auto");
 
   const g = svg
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
+
   const processedData = [...data.entries()].map(([key, value]) => {
     return {
       id: key,
@@ -65,39 +110,35 @@ function createStabilizationChart(data, containerId, options) {
       glucoseSpike: value,
     };
   });
-  // Color scale
-  const colorScale = d3
-    .scaleSequential()
-    .domain([0, d3.max(processedData, (d) => d.glucoseSpike)])
-    .interpolator(d3[options.interpolator]);
 
-  // Scales
+  // Color scale - using absolute values for color intensity
+  // const colorScale = d3
+  //   .scaleSequential()
+  //   .domain([0, d3.max(processedData, (d) => Math.abs(d.glucoseSpike))])
+  //   .interpolator(d3[options.interpolator]);
+
+  // Scales - KEY CHANGE: Set domain to include negative values
   const xScale = d3
     .scaleBand()
     .domain(processedData.map((d) => d.carbRange))
     .range([0, width])
     .padding(0.1);
 
+  // Updated Y scale for negative values
+  const minValue = d3.min(processedData, (d) => d.glucoseSpike);
   const yScale = d3
     .scaleLinear()
-    .domain([0, d3.max(processedData, (d) => d.glucoseSpike) * 1.1])
-    .range([height, 0]);
-
-  // Add title
-  svg
-    .append("text")
-    .attr("class", "chart-title")
-    .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", 30)
-    .text(options.title);
+    .domain([minValue * 1.1, 0]) // Start from negative value, end at 0
+    .range([height, 0]); // This maps the most negative value to bottom of chart
 
   // Add subtitle
-  svg
+  let subtitle = svg
     .append("text")
     .attr("class", "chart-subtitle")
     .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", 55)
+    .attr("y", 30)
     .text(options.subtitle);
+  wrapText(subtitle, 600);
 
   // Add X axis
   g.append("g")
@@ -106,6 +147,16 @@ function createStabilizationChart(data, containerId, options) {
 
   // Add Y axis
   g.append("g").call(d3.axisLeft(yScale));
+
+  // Add zero line for reference
+  g.append("line")
+    .attr("x1", 0)
+    .attr("x2", width)
+    .attr("y1", yScale(0))
+    .attr("y2", yScale(0))
+    .attr("stroke", "#666")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "3,3");
 
   // Add X axis label
   svg
@@ -126,7 +177,7 @@ function createStabilizationChart(data, containerId, options) {
     .attr("y", 20)
     .text(options.yAxisLabel);
 
-  // Add bars
+  // Add bars - KEY CHANGE: Bars now extend from zero line down to the value
   g.selectAll(".bar")
     .data(processedData)
     .enter()
@@ -134,16 +185,16 @@ function createStabilizationChart(data, containerId, options) {
     .attr("class", "bar")
     .attr("x", (d) => xScale(d.carbRange))
     .attr("width", xScale.bandwidth())
-    .attr("y", (d) => yScale(d.glucoseSpike))
-    .attr("height", (d) => height - yScale(d.glucoseSpike))
-    .attr("fill", (d) => colorScale(d.glucoseSpike))
+    .attr("y", yScale(0)) // Start at the zero line
+    .attr("height", (d) => yScale(d.glucoseSpike) - yScale(0)) // Height from zero to the value
+    // .attr("fill", (d) => colorScale(Math.abs(d.glucoseSpike))) // Use absolute value for color
     .on("mouseover", function (event, d) {
       tooltip.transition().duration(200).style("opacity", 1);
       tooltip
         .html(
-          `<strong>${
+          `<strong>Bin: </strong>${
             d.carbRange
-          }g carbs</strong><br/>Glucose spike: ${Math.round(
+          }g<br/> <strong>Glucose Stabilization Amount: </strong>${Math.round(
             d.glucoseSpike
           )} mg/dL`
         )
@@ -154,8 +205,6 @@ function createStabilizationChart(data, containerId, options) {
       tooltip.transition().duration(200).style("opacity", 0);
     });
 }
-
-
 
 function compareRanges(rangeStr) {
   // Assumes that rangeStr is a string with either a hyphen or a +.
@@ -173,11 +222,15 @@ function compareRanges(rangeStr) {
 
 async function createPlot(filePath) {
   // Make sure bins are sorted in descending order
-  const carbBins = [75, 50, 35, 20, 10, 0];
-  const proteinBins = [40, 25, 15, 10, 3, 0];
-  const carbLabels = ["75+", "50-75", "35-50", "20-35", "10-20", "0-10"];
-  const proteinLabels = ["40+", "25-40", "15-25", "10-15", "3-10", "0-3"];
+  // const carbBins = [75, 50, 35, 20, 10, 0];
+  // const proteinBins = [40, 25, 15, 10, 3, 0];
+  // const carbLabels = ["75+", "50-75", "35-50", "20-35", "10-20", "0-10"];
+  // const proteinLabels = ["40+", "25-40", "15-25", "10-15", "3-10", "0-3"];
 
+  const carbBins = [25, 10, 0];
+  const proteinBins = [20, 10, 0];
+  const carbLabels = ["25+", "10-25", "0-10"];
+  const proteinLabels = ["20+", "10-20", "0-10"];
   let data = await loadCSVData(filePath);
   let carbDataBinned = bin_data(data, carbBins, carbLabels, "total_carb");
   let proteinDataBinned = bin_data(data, proteinBins, proteinLabels, "protein");
@@ -193,27 +246,24 @@ async function createPlot(filePath) {
     )
   );
   const carbOptions = {
-    title: "How Quickly Does Blood Sugar Stabilize with Carbohydrates?",
-    subtitle:
-      "Difference Between Highest Glucose Spike After Meal and Glucose Levels 2 hours after meal",
-    xAxisLabel: "Carbohydrate Range (grams)",
-    yAxisLabel: "Glucose Change (mg/dL)",
+    subtitle: `Observed Difference Between Highest Glucose Spike At Any Points 2 hours After Meal 
+      and Mean Glucose Levels 2-2.5 hours after meal.`,
+    xAxisLabel: "Carbohydrate Range (g)",
+    yAxisLabel: "Glucose Stabilization Amount (mg/dL)",
     interpolator: "interpolateOranges",
   };
   const proteinOptions = {
-    title: "How Quickly Does Blood Sugar Stabilize with Proteins?",
-    subtitle:
-      "Difference Between Highest Glucose Spike After Meal and Glucose Levels 2 hours after meal",
-    xAxisLabel: "Protein Range (grams)",
-    yAxisLabel: "Glucose Change (mg/dL)",
+    subtitle: `Observed Difference Between Highest Glucose Spike At Any Points 2 hours After Meal
+      and Mean Glucose Levels 2-2.5 hours after meal.`,
+    xAxisLabel: "Protein Range (g)",
+    yAxisLabel: "Glucose Stabilization Amount (mg/dL)",
     interpolator: "interpolateBlues",
   };
-  createStabilizationChart(sortedProteinBins, "protein_stabilize_chart", proteinOptions);
+  createStabilizationChart(
+    sortedProteinBins,
+    "protein_stabilize_chart",
+    proteinOptions
+  );
   createStabilizationChart(sortedCarbBins, "carb_stabilize_chart", carbOptions);
 }
 await createPlot("viv_work/glucose_spikes.csv");
-
-/* I really want to refactor the logic to allow the creation of both plots
-1. Allow to take in an interpolator
-2. 
-*/
