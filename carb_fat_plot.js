@@ -503,6 +503,29 @@ function createChart(carbData, fatData, options) {
     .duration(duration)
     .style("opacity", 0)
     .remove();
+  const g_elem = d3.select("#chart_fat_carb > svg > g");
+  if (options?.annotations === "same carb") {
+    drawVerticalLine(
+      g_elem,
+      233.8235294117647,
+      16.693121693121746,
+      79.65608465608462
+    );
+    drawVerticalLine(
+      g_elem,
+      498.8235294117647,
+      139.46389151687163,
+      155.76777560339207
+    );
+    //155.76777560339207
+    //<circle class="dot fat-dot" r="2.0446633437500004" cx="498.8235294117647" cy="139.46389151687163" style="opacity: 0.511166;"></circle>
+    addText(g_elem, 460, 100, "High Protein Meals \nEnd With Higher Glucose");
+    addText(g_elem, 280, 130, "High Protein Meals \nHave Higher Lower Glucose");
+  } else {
+    // Remove existing multiline-text elements if they exist
+    g_elem.selectAll(".difference-text").remove();
+    g_elem.selectAll(".difference-line").remove();
+  }
 }
 
 function animateNumber(element, from, to, duration = 500) {
@@ -518,6 +541,36 @@ function animateNumber(element, from, to, duration = 500) {
     }
   };
   animate();
+}
+function addText(g, x, y, text) {
+  const lines = text.split("\n");
+  const lineHeight = 16; // Adjust based on font size
+
+  const textGroup = g.append("g").attr("class", "difference-text");
+
+  lines.forEach((line, i) => {
+    textGroup
+      .append("text")
+      .attr("x", x)
+      .attr("y", y + i * lineHeight)
+      .attr("text-anchor", "middle")
+      .style("font-size", "14px")
+      .style("fill", "#333")
+      .style("font-weight", "normal")
+      .text(line);
+  });
+}
+function drawVerticalLine(g, x, yStart, yEnd) {
+  return g
+    .append("line")
+    .attr("class", "difference-line")
+    .attr("x1", x)
+    .attr("x2", x)
+    .attr("y1", yStart)
+    .attr("y2", yEnd)
+    .style("stroke", "#333")
+    .style("stroke-width", 1)
+    .style("stroke-dasharray", null);
 }
 
 function updateChart() {
@@ -669,7 +722,7 @@ scroller
       controls.style.display = "none";
     }
     if (index < carbEqualIndex) {
-      let options = { blueTitle: "Low Protein", redTitle: "High Protein" };
+      let options = { blueTitle: "Low Protein", redTitle: "High Protein", annotations: "same carb"};
       fixed_transform(45, 72, options);
     }
 
