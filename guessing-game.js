@@ -67,21 +67,14 @@ console.log(maxKey);
 // Bind randomMeals to the buttons and update their HTML
 d3.selectAll(".option")
   .data(randomMeals)
-  .html(
-    (d, i) => `Meal ${i + 1} |
-                   Patient ID: ${motherJSON[d].ID}
-                   Gender: ${motherJSON[d].Gender}
-                   HbA1c Level: ${motherJSON[d].HbA1c}
-                   Carb content: ${motherJSON[d].total_carb}
-                   Protein content: ${motherJSON[d].protein}`
-  );
+  .html((d, i) => `Meal ${i+1} |
+                   Carb content: ${motherJSON[d].total_carb.toFixed(2)}
+                   Protein content: ${motherJSON[d].protein.toFixed(2)}`);  
 
-document.querySelectorAll(".option").forEach((btn) => {
-  btn.addEventListener("click", function () {
-    document
-      .querySelectorAll(".option")
-      .forEach((b) => b.classList.remove("selected"));
-    this.classList.add("selected");
+document.querySelectorAll('.option').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
+    this.classList.add('selected');
   });
 });
 
@@ -107,23 +100,34 @@ async function plotGlucoseTraces(mealInfos) {
   }
 
   // Prepare traces for each meal
-  const traces = mealInfos.map((info) => {
-    const mealDate = new Date(info.mealTime);
-    const start = new Date(mealDate.getTime() - 30 * 60 * 1000);
-    const end = new Date(mealDate.getTime() + 2 * 60 * 60 * 1000);
-    const trace = glucoseData
-      .filter(
-        (d) =>
-          d.patient_id === info.patientId &&
-          d.Timestamp >= start &&
-          d.Timestamp <= end
-      )
-      .map((d) => ({
-        ...d,
-        rel_min: (d.Timestamp - mealDate) / 60000,
-      }));
-    return { trace, patientId: info.patientId, mealTime: info.mealTime };
-  });
+  const traces = mealInfos.map(info => {
+  const mealDate = new Date(info.mealTime);
+  const start = new Date(mealDate.getTime() - 30 * 60 * 1000);
+  const end = new Date(mealDate.getTime() + 2 * 60 * 60 * 1000);
+  const trace = glucoseData.filter(d =>
+    d.patient_id === info.patientId &&
+    d.Timestamp >= start &&
+    d.Timestamp <= end
+  ).map(d => ({
+    ...d,
+    rel_min: (d.Timestamp - mealDate) / 60000
+  }));
+
+  // Find the glucose value at time 0 (or closest to 0)
+  let baseline = null;
+  if (trace.length > 0) {
+    // Find the point closest to rel_min === 0
+    baseline = trace.reduce((prev, curr) =>
+      Math.abs(curr.rel_min) < Math.abs(prev.rel_min) ? curr : prev
+    ).glucose_value;
+    // Shift all values so that value at 0 min is 0
+    trace.forEach(d => {
+      d.glucose_value = d.glucose_value - baseline;
+    });
+  }
+
+  return {trace, patientId: info.patientId, mealTime: info.mealTime};
+});
 
   // Flatten all glucose values for y-domain
   const allGlucose = traces.flatMap((t) => t.trace.map((d) => d.glucose_value));
@@ -190,62 +194,77 @@ async function plotGlucoseTraces(mealInfos) {
       .attr("d", line);
   });
 
+
+  // After you have your traces array
+  let maxAvg = -Infinity;
+  let maxMealIndex = -1;
+  let mealAvgs = [];
+
+  traces.forEach((t, i) => {
+    // Get all glucose differences after 0 minutes
+    const postMeal = t.trace.filter(d => d.rel_min > 0);
+    if (postMeal.length > 0) {
+      const avg = postMeal.reduce((sum, d) => sum + d.glucose_value, 0) / postMeal.length;
+      mealAvgs.push(avg);
+      if (avg > maxAvg) {
+        maxAvg = avg;
+        maxMealIndex = i; // 0-based index: 0 for meal 1, 1 for meal 2, etc.
+      }
+    }
+  });
+
   // --- Legend ---
-  d3.select(".guess-legend").selectAll("*").remove(); // Clear previous legend
+d3.select('.guess-legend').selectAll('*').remove(); // Clear previous legend
 
-  const legendEntryWidth = 220;
-  const legendEntryHeight = 24;
+const legendEntryWidth = 300;
+const legendEntryHeight = 24;
 
-  const legendSvg = d3
-    .select(".guess-legend")
-    .append("svg")
-    .attr("width", traces.length * legendEntryWidth)
-    .attr("height", legendEntryHeight);
+const legendSvg = d3.select('.guess-legend')
+  .append('svg')
+  .attr('width', traces.length * legendEntryWidth)
+  .attr('height', legendEntryHeight);
 
-  const legend = legendSvg
-    .selectAll(".legend-item")
-    .data(traces)
-    .enter()
-    .append("g")
-    .attr("class", "legend-item")
-    .attr("transform", (d, i) => `translate(${i * legendEntryWidth + 10}, 2)`);
+const legend = legendSvg.selectAll('.legend-item')
+  .data(traces)
+  .enter()
+  .append('g')
+  .attr('class', 'legend-item')
+  .attr('transform', (d, i) => `translate(${i * legendEntryWidth + 10}, 2)`);
 
-  legend
-    .append("rect")
-    .attr("width", 20)
-    .attr("height", 20)
-    .attr("y", 0)
-    .attr("fill", (d, i) => color(i));
+legend.append('rect')
+  .attr('width', 20)
+  .attr('height', 20)
+  .attr('y', 0)
+  .attr('fill', (d, i) => color(i));
 
-  legend
-    .append("text")
-    .attr("x", 30)
-    .attr("y", 15) // Vertically center text with the rect
-    .attr("font-size", 14)
-    .text(
-      (d, i) => `Meal ${i + 1}, Spike: ${motherJSON[temp[i]].glucose_spike}`
-    );
+legend.append('text')
+  .attr('x', 30)
+  .attr('y', 15) // Vertically center text with the rect
+  .attr('font-size', 14)
+  .text((d, i) => `Meal ${i+1}, Glucose Difference: ${mealAvgs[i].toFixed(2)}`);
 
   // Labels
-  svg
-    .append("text")
-    .attr("x", width / 2)
-    .attr("y", -8)
-    .attr("text-anchor", "middle")
-    .text("Glucose Trace");
-  svg
-    .append("text")
-    .attr("x", width / 2)
-    .attr("y", height + 35)
-    .attr("text-anchor", "middle")
-    .text("Minutes relative to meal");
-  svg
-    .append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("x", -height / 2)
-    .attr("y", -35)
-    .attr("text-anchor", "middle")
-    .text("Glucose (mg/dL)");
+  svg.append('text')
+    .attr('x', width / 2)
+    .attr('y', -8)
+    .attr('text-anchor', 'middle')
+    .text('Glucose Trace');
+  svg.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + 35)
+    .attr('text-anchor', 'middle')
+    .text('Minutes relative to meal');
+  svg.append('text')
+    .attr('transform', 'rotate(-90)')
+    .attr('x', -height / 2)
+    .attr('y', -35)
+    .attr('text-anchor', 'middle')
+    .text('Glucose (mg/dL)');
+
+
+
+  // To return the corresponding meal number (1, 2, or 3)
+  return maxMealIndex + 1;
 }
 
 // Example usage:
@@ -275,7 +294,8 @@ document.getElementById("item4").addEventListener("click", function () {
     ).indexOf(selected);
 
     // Call plotGlucoseTraces with only the selected meal
-    plotGlucoseTraces(randomMeals);
+    let max_meal = plotGlucoseTraces(randomMeals);
+    console.log(max_meal);
 
     // Check if selected button matches maxKey
     const selectedMealKey = `meal ${selectedIndex + 1}`;
