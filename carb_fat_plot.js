@@ -641,18 +641,19 @@ scroller
 
         // Reveal sliders only in final step
         const controls = document.querySelector(".controls-container");
-        if (index >= 55) {
+        const carbEqualIndex = 5
+        const interactiveIndex = 8
+        if (index >= interactiveIndex) {
             controls.style.display = "flex";
         } else {
             controls.style.display = "none";
         }
-
-        if (index >= 25 && index < 55) {
-            fixed_transform(10,10);
+        if (index < carbEqualIndex) {
+            fixed_transform(45,72);
         }
-
-        if (index >= 0 && index < 25) {
-            fixed_transform(50,75);
+        
+        if (index >= carbEqualIndex && index < interactiveIndex) {
+            fixed_transform(75,34);
         }
 
         // Add your custom event logic here per index
