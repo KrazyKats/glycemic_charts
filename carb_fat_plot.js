@@ -399,16 +399,6 @@ function createChart(carbData, fatData, options) {
     .text("Time After Meal (minutes)");
 
   // Update legend with animation
-  let blueTitle = "High Carb";
-
-  if (options?.blueTitle !== undefined) {
-    blueTitle = options.blueTitle;
-  }
-  let redTitle = "High Protein";
-  if (options?.redTitle !== undefined) {
-    redTitle = options.redTitle;
-  }
-
   const legendData = [];
   if (carbData.length > 0) {
     const carbPercentile = parseInt(carbSlider.value);
@@ -416,18 +406,30 @@ function createChart(carbData, fatData, options) {
       carbPercentiles,
       carbPercentile
     );
+    let blueTitle = `High Carb (≥${carbPercentile}% / ${carbActualValue.toFixed(
+      1
+    )}g)`;
+
+    if (options?.blueTitle !== undefined) {
+      blueTitle = options.blueTitle;
+    }
     legendData.push({
-      label: `${blueTitle} (≥${carbPercentile}% / ${carbActualValue.toFixed(
-        1
-      )}g)`,
+      label: blueTitle,
       color: "#e74c3c",
     });
   }
   if (fatData.length > 0) {
     const fatPercentile = parseInt(fatSlider.value);
     const fatActualValue = getValueAtPercentile(fatPercentiles, fatPercentile);
+    let redTitle = `High Protein (≥${fatPercentile}% / ${fatActualValue.toFixed(
+      1
+    )}g)`;
+    if (options?.redTitle !== undefined) {
+      redTitle = options.redTitle;
+    }
+
     legendData.push({
-      label: `${redTitle} (≥${fatPercentile}% / ${fatActualValue.toFixed(1)}g)`,
+      label: redTitle,
       color: "#3498db",
     });
   }
@@ -662,7 +664,6 @@ scroller
     const carbEqualIndex = 4;
     const interactiveIndex = 6;
     if (index >= interactiveIndex) {
-
       controls.style.display = "flex";
     } else {
       controls.style.display = "none";
@@ -670,7 +671,6 @@ scroller
     if (index < carbEqualIndex) {
       let options = { blueTitle: "Low Protein", redTitle: "High Protein" };
       fixed_transform(45, 72, options);
-
     }
 
     if (index >= carbEqualIndex && index < interactiveIndex) {
