@@ -3,8 +3,8 @@ import scrollama from "https://cdn.jsdelivr.net/npm/scrollama@3.2.0/+esm";
 
 // Chart dimensions
 const margin = { top: 20, right: 200, bottom: 60, left: 70 };
-const width = 1000 - margin.left - margin.right;
-const height = 500 - margin.top - margin.bottom;
+const width = 800 - margin.left - margin.right;
+const height = 400 - margin.top - margin.bottom;
 
 let rawData = [];
 let carbPercentiles = [];
@@ -641,8 +641,8 @@ scroller
 
         // Reveal sliders only in final step
         const controls = document.querySelector(".controls-container");
-        const carbEqualIndex = 5
-        const interactiveIndex = 8
+        const carbEqualIndex = 4
+        const interactiveIndex = 6
         if (index >= interactiveIndex) {
             controls.style.display = "flex";
         } else {
