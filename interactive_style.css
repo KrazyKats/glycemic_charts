@@ -1,316 +1,314 @@
+html {
+  --carb-color:orange;
+  --protein-color: #2e86ab;
+}
 .chart-container-fat-carb {
-    margin: 2rem auto;
-    display: grid;
-    flex-direction: column;
-    flex-direction: row;
-    max-width: 10000px;
-    background-color: white;
-    border-radius: 8px;
-    padding: 2rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
+  margin: 2rem auto;
+  display: grid;
+  flex-direction: column;
+  flex-direction: row;
+  max-width: 10000px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
 }
 
 .chart-container-fat-carb:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .controls-container {
-    display: flex;
-    gap: 40px;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-    transition: all 0.3s ease;
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  transition: all 0.3s ease;
 }
 
-
 .slider-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 200px;
-    transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 200px;
+  transition: transform 0.2s ease;
 }
 
 .slider-group:hover {
-    transform: translateY(-2px);
+  transform: translateY(-2px);
 }
 
 .slider-label {
-    font-weight: 600;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: #2c3e50;
-    transition: color 0.2s ease;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #2c3e50;
+  transition: color 0.2s ease;
 }
 
-
 .slider-label-red {
-    font-weight: 600;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: #2c3e50;
-    transition: color 0.2s ease;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #2c3e50;
+  transition: color 0.2s ease;
 }
 
 .slider-container {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
 }
 
 .slider {
-    flex: 1;
-    height: 6px;
-    border-radius: 3px;
-    background: #ddd;
-    outline: none;
-    transition: 0.2s ease;
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #ddd;
+  outline: none;
+  transition: 0.2s ease;
 }
 
 .slider:hover {
-    background: #ccc;
+  background: #ccc;
 }
 
 .slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #2c3e50;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #2c3e50;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .slider::-webkit-slider-thumb:hover {
-    background: #34495e;
-    transform: scale(1.1);
+  background: #34495e;
+  transform: scale(1.1);
 }
 
 .slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #2c3e50;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s ease;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #2c3e50;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
 }
 
 .slider::-moz-range-thumb:hover {
-    background: #34495e;
-    transform: scale(1.1);
+  background: #34495e;
+  transform: scale(1.1);
 }
 
 .value-display {
-    font-weight: bold;
-    font-size: 14px;
-    min-width: 50px;
-    text-align: center;
-    background: #f8f9fa;
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: 1px solid #e9ecef;
-    transition: all 0.2s ease;
+  font-weight: bold;
+  font-size: 14px;
+  min-width: 50px;
+  text-align: center;
+  background: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
 }
 
 .value-display:hover {
-    background: #e9ecef;
-    transform: scale(1.05);
+  background: #e9ecef;
+  transform: scale(1.05);
 }
 
 #chart_fat_carb {
-    width: 100%;
-    text-align: center;
+  width: 100%;
+  text-align: center;
 }
 
-
 .line {
-    fill: none;
-    stroke-width: 3;
+  fill: none;
+  stroke-width: 3;
 }
 
 .carb-line {
-    stroke: #e74c3c;
+  stroke: var(--carb-color);
 }
 
 .fat-line {
-    stroke: #3498db;
+  stroke: var(--protein-color);
 }
 
 .dot {
-    stroke-width: 2;
-    stroke: white;
+  stroke-width: 2;
+  stroke: white;
 }
 
 .carb-dot {
-    fill: #e74c3c;
+  fill: var(--carb-color);
 }
 
 .fat-dot {
-    fill: #3498db;
+  fill: var(--protein-color);
 }
 
 .grid line {
-    stroke: #e0e0e0;
-    stroke-dasharray: 2, 2;
+  stroke: #e0e0e0;
+  stroke-dasharray: 2, 2;
 }
 
 .axis {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 .axis-label {
-    font-size: 14px;
-    font-weight: 500;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .zero-line {
-    stroke: #95a5a6;
-    stroke-width: 2;
-    stroke-dasharray: 5, 5;
+  stroke: #95a5a6;
+  stroke-width: 2;
+  stroke-dasharray: 5, 5;
 }
 
 .meal-marker {
-    stroke: #e74c3c;
-    stroke-width: 2;
-    stroke-dasharray: 3, 3;
+  stroke: var(--carb-color);
+  stroke-width: 2;
+  stroke-dasharray: 3, 3;
 }
 
 .legend {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .legend-item {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .legend-item:hover {
-    opacity: 0.7;
+  opacity: 0.7;
 }
 
 .tooltip {
-    position: absolute;
-    pointer-events: none;
-    background: white;
-    border: 1px solid #ccc;
-    padding: 10px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    color: #333;
-    line-height: 1.4em;
-    z-index: 10;
-    max-width: 250px;
+  position: absolute;
+  pointer-events: none;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: #333;
+  line-height: 1.4em;
+  z-index: 10;
+  max-width: 250px;
 }
 
 .stats-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    column-gap: 10px;
-    row-gap: 30px;
-    justify-items: center;
-    justify-self: center;
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 10px;
+  row-gap: 30px;
+  justify-items: center;
+  justify-self: center;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
 }
 
 .stat-box {
-    background: #f8f9fa;
-    padding: 12px 20px;
-    border-radius: px;
-    border: 1px solid #e9ecef;
-    text-align: center;
-    min-width: 120px;
+  background: #f8f9fa;
+  padding: 12px 20px;
+  border-radius: px;
+  border: 1px solid #e9ecef;
+  text-align: center;
+  min-width: 120px;
 }
 
 .stat-label {
-    font-size: 12px;
-    color: #6c757d;
-    margin-bottom: 4px;
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 4px;
 }
 
 .stat-value {
-    font-size: 16px;
-    font-weight: bold;
-    color: #2c3e50;
+  font-size: 16px;
+  font-weight: bold;
+  color: #2c3e50;
 }
 
 .carb-stat {
-    border-left: 10px solid #e74c3c;
-    border-right: 10px solid #e74c3c;
+  border-left: 10px solid var(--carb-color);
+  border-right: 10px solid var(--carb-color);
 }
 
 .fat-stat {
-    border-left: 10px solid #3498db;
-    border-right: 10px solid #3498db;
+  border-left: 10px solid var(--protein-color);
+  border-right: 10px solid var(--protein-color);
 }
 
 /* Make carb slider track red */
 #carbSlider {
-    accent-color: #e74c3c;
-    /* for modern browsers */
+  accent-color: var(--carb-color);
+  /* for modern browsers */
 }
 
 /* Fallback and cross-browser styling */
 #carbSlider::-webkit-slider-thumb {
-    background: #e74c3c;
+  background: var(--carb-color);
 }
 
 #carbSlider::-moz-range-thumb {
-    background: #e74c3c;
+  background: var(--carb-color)
 }
 
 #carbSlider:hover {
-    background: #f5c6c6;
+  background: #f5c6c6;
 }
-
 
 .error-message {
-    text-align: center;
-    color: #e74c3c;
-    padding: 50px;
-    background: #fff5f5;
-    border-radius: 8px;
-    border: 1px solid #fed7d7;
+  text-align: center;
+  color: var(--carb-color);
+  padding: 50px;
+  background: #fff5f5;
+  border-radius: 8px;
+  border: 1px solid #fed7d7;
 }
 
-
-
 .scroll-wrapper {
-    display: flex;
-    gap: 2rem;
-    margin: 80px 0;
+  display: flex;
+  gap: 2rem;
+  margin: 80px 0;
 }
 
 .scroll-text {
-    width: 40%;
-    font-size: 1rem;
-    line-height: 1.6;
+  width: 40%;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .scroll-text .step {
-    margin-bottom: 20rem;
-    padding: 1rem;
-    background: #fff;
-    border-left: 5px solid #3498db;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20rem;
+  padding: 1rem;
+  background: #fff;
+  border-left: 5px solid var(--protein-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .scroll-graphic {
-    width: 60%;
-    position: relative;
+  width: 60%;
+  position: relative;
 }
 
 .sticky-chart {
-    position: sticky;
-    top: 60px;
+  position: sticky;
+  top: 60px;
 }
 
 .controls-container {
-    transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.5s ease-in-out;
 }

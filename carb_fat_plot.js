@@ -1,5 +1,4 @@
 import scrollama from "https://cdn.jsdelivr.net/npm/scrollama@3.2.0/+esm";
-
 // Chart dimensions
 const margin = { top: 20, right: 200, bottom: 60, left: 70 };
 const width = 800 - margin.left - margin.right;
@@ -406,13 +405,9 @@ function createChart(carbData, fatData, options) {
       carbPercentiles,
       carbPercentile
     );
-    let blueTitle = `High Carb (≥${carbPercentile}% / ${carbActualValue.toFixed(
-      1
-    )}g)`;
-
-    if (options?.blueTitle !== undefined) {
-      blueTitle = options.blueTitle;
-    }
+    let blueTitle =
+      options?.blueTitle ??
+      `High Carb (≥${carbPercentile}% / ${carbActualValue.toFixed(1)}g)`;
     legendData.push({
       label: blueTitle,
       color: "#e74c3c",
@@ -427,6 +422,7 @@ function createChart(carbData, fatData, options) {
     if (options?.redTitle !== undefined) {
       redTitle = options.redTitle;
     }
+    // console.log(`redTitle: ${redTitle}`)
 
     legendData.push({
       label: redTitle,
@@ -504,27 +500,57 @@ function createChart(carbData, fatData, options) {
     .style("opacity", 0)
     .remove();
   const g_elem = d3.select("#chart_fat_carb > svg > g");
+  // g_elem.selectAll(".difference-box").remove();
   if (options?.annotations === "same carb") {
-    drawVerticalLine(
-      g_elem,
-      233.8235294117647,
-      16.693121693121746,
-      79.65608465608462
-    );
-    drawVerticalLine(
-      g_elem,
-      498.8235294117647,
-      139.46389151687163,
-      155.76777560339207
-    );
-    //155.76777560339207
-    //<circle class="dot fat-dot" r="2.0446633437500004" cx="498.8235294117647" cy="139.46389151687163" style="opacity: 0.511166;"></circle>
-    addText(g_elem, 460, 100, "High Protein Meals \nEnd With Higher Glucose");
-    addText(g_elem, 280, 130, "High Protein Meals \nHave Higher Lower Glucose");
+    // drawVerticalLine(
+    //   g_elem,
+    //   233.8235294117647,
+    //   16.693121693121746,
+    //   79.65608465608462
+    // );
+    // drawVerticalLine(
+    //   g_elem,
+    //   498.8235294117647,
+    //   139.46389151687163,
+    //   155.76777560339207
+    // );
+    if (d3.selectAll(".same_carb").size() === 0) {
+      drawBox(
+        g_elem,
+        xScale(40),
+        xScale(80),
+        yScale(20),
+        yScale(30),
+        "same_carb diff_annot"
+      );
+      drawBox(
+        g_elem,
+        xScale(120),
+        xScale(145),
+        yScale(12),
+        yScale(15),
+        "same_carb diff_annot"
+      );
+
+      //155.76777560339207
+      //<circle class="dot fat-dot" r="2.0446633437500004" cx="498.8235294117647" cy="139.46389151687163" style="opacity: 0.511166;"></circle>
+      addText(
+        g_elem,
+        xScale(125),
+        yScale(10),
+        "High Protein Meals \nEnd With Higher Glucose",
+        "same_carb diff_annot"
+      );
+      addText(
+        g_elem,
+        280,
+        130,
+        "High Protein Meals \nHave Lower Maximum Glucose",
+        "same_carb diff_annot"
+      );
+    }
   } else {
-    // Remove existing multiline-text elements if they exist
-    g_elem.selectAll(".difference-text").remove();
-    g_elem.selectAll(".difference-line").remove();
+    g_elem.selectAll(".diff_annot").remove();
   }
 }
 
@@ -542,11 +568,11 @@ function animateNumber(element, from, to, duration = 500) {
   };
   animate();
 }
-function addText(g, x, y, text) {
+function addText(g, x, y, text, className = "difference-text") {
   const lines = text.split("\n");
   const lineHeight = 16; // Adjust based on font size
 
-  const textGroup = g.append("g").attr("class", "difference-text");
+  const textGroup = g.append("g").attr("class", className);
 
   lines.forEach((line, i) => {
     textGroup
@@ -560,18 +586,32 @@ function addText(g, x, y, text) {
       .text(line);
   });
 }
-function drawVerticalLine(g, x, yStart, yEnd) {
+
+function drawBox(g, x1, x2, yStart, yEnd, className) {
   return g
-    .append("line")
-    .attr("class", "difference-line")
-    .attr("x1", x)
-    .attr("x2", x)
-    .attr("y1", yStart)
-    .attr("y2", yEnd)
+    .append("rect")
+    .attr("class", className)
+    .attr("x", Math.min(x1, x2))
+    .attr("y", Math.min(yStart, yEnd))
+    .attr("width", Math.abs(x2 - x1))
+    .attr("height", Math.abs(yEnd - yStart))
     .style("stroke", "#333")
     .style("stroke-width", 1)
-    .style("stroke-dasharray", null);
+    .style("opacity", 0.5);
 }
+
+// function drawVerticalLine(g, x, yStart, yEnd) {
+//   return g
+//     .append("line")
+//     .attr("class", "difference-line")
+//     .attr("x1", x)
+//     .attr("x2", x)
+//     .attr("y1", yStart)
+//     .attr("y2", yEnd)
+//     .style("stroke", "#333")
+//     .style("stroke-width", 1)
+//     .style("stroke-dasharray", null);
+// }
 
 function updateChart() {
   const carbPercentile = parseInt(carbSlider.value);
@@ -722,7 +762,11 @@ scroller
       controls.style.display = "none";
     }
     if (index < carbEqualIndex) {
-      let options = { blueTitle: "Low Protein", redTitle: "High Protein", annotations: "same carb"};
+      let options = {
+        blueTitle: "Low Protein",
+        redTitle: "High Protein",
+        annotations: "same carb",
+      };
       fixed_transform(45, 72, options);
     }
 
