@@ -13,6 +13,7 @@
     <script src="glucose-plot.js" type="module"></script>
     <script src="stabilize_bar_plot.js" type="module"></script>
     <script src="carb_fat_plot.js" type="module"></script>
+    <script src="guessing-game.js" type="module"></script>
   </head>
 
   <body>
@@ -92,7 +93,6 @@
             preceding the meal).
           </p>
         </div>
-
         <!-- Legend container -->
         <div class="legend-section">
           <h3 class="legend-title">Legend</h3>
@@ -124,6 +124,31 @@
           </div>
 
           <button id="replay-button">Replay Animation</button>
+        </div>
+      </section>
+      <section class="guessing-game">
+        <div class="guess-left">
+          <div class="instructions">
+            <p class="text-instruct">
+              First, let's see how much you know about what causes glucose
+              spikes. Here are 3 different meals from our patients along with
+              some relevant information. Your task: rank who will have the
+              highest glucose spike!
+            </p>
+          </div>
+          <div class="ranking">
+            <div class="rank-buttons">
+              <button class="option" id="item1">a</button>
+              <button class="option" id="item2">b</button>
+              <button class="option" id="item3">c</button>
+              <button class="confirm-button" id="item4">Confirm</button>
+            </div>
+          </div>
+        </div>
+        <div class="guess-right">
+          <div class="guess-graph"></div>
+          <div class="guess-legend"></div>
+          <div class="guess-explain"></div>
         </div>
       </section>
 
