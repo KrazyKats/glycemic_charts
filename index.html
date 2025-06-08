@@ -211,7 +211,7 @@
       <div id="bar-tooltip" class="tooltip" style="opacity: 0"></div>
 
       <!-- Quy-Dzu's part please do not disturb the spaghetti -->
-      <section class="chart-section">
+      <!-- <section class="chart-section">
         <h2 class="subheader">
           High Carbohydrate Meals Have Blood Sugar Rapidly Reduce After Peaking
         </h2>
@@ -249,7 +249,7 @@
             <div id="protein_stabilize_chart" class="stabilize"></div>
           </div>
         </div>
-      </section>
+      </section> -->
     </main>
 
     <!-- <section>
@@ -261,40 +261,36 @@
       <div class="scroll-text">
         <div class="step">
           We have a minimum carbohydrate and minimum protein threshold. We
-          consider meals at or above the 72nd percentile of protein in blue and
-          meals at or above the 45th percentile of carbs in red. Due to the
+          consider meals at or above the 34th percentile of protein in green and
+          meals at or above the 75th percentile of carbs in red. Due to the
           correlation between protein and carbohydrates, both sets of meals have
           essentially equivalent average carbohydrates but very different
-          protein contents.
+          protein contents. Therefore, we are accounting for the confounding
+          variable of carbohydrates and
+          <strong
+            >isolating the contribution of carbohydrates on blood sugar</strong
+          >.
         </div>
         <div class="step">
           We also now include the time as a component in order to show the full
           details of a blood sugar spike.
         </div>
         <div class="step">
-          Therefore, we account for the confounding variable of carbohydrates
-          and
+          We re-affirm our previous conclusion that higher carbohydrates have
+          higher blood sugar spikes. Also, There is no difference to the
+          flatness of either graph with a similar level of protein content.
+        </div>
+        <div class="step">
+          Now, we account for the confounding variable of carbohydrates and
           <strong>isolate the contribution of protein on blood sugar</strong>.
         </div>
         <div class="step">
-          Surprisingly, the high-protein blue line has a
-          <strong>lower</strong> maximum than the low-protein orange line – and
-          thus we see that proteins actually reduce the blood sugar spikes. By
-          correctly accounting for carbohydrates, we actually find the opposite
-          of what we had from the above bar plots.
-        </div>
-        <div class="step">
-          We now equalize the protein levels to isolate the contribution of
-          carbohydrates.
-        </div>
-        <div class="step">
-          We re-affirm our previous conclusion that higher carbohydrates have
-          higher blood sugar spikes.
-        </div>
-        <div class="step">
-          There is no difference to the flatness of either graph with a similar
-          level of protein content. This again indicates that protein is
-          important to determine the flatness of graphs.
+          Surprisingly, the high-protein blue line is flatter, importantly
+          having a <strong>lower</strong>
+          maximum blood sugar than the low-protein orange line – and thus we see
+          that proteins actually reduce the blood sugar spikes. By correctly
+          accounting for carbohydrates, we actually find the reverse our hasty
+          conclusion in the bar plots above.
         </div>
         <div class="step">
           <p>
@@ -312,18 +308,18 @@
             for the release of a steadier stream of energy.
           </p>
         </div>
+        <div class="step">Now you play around with it!</div>
         <div class="step">
-          Now you try! Adjust the minimum protein and minimum carbohydrate
-          sliders to explore the data on your own. Keep in mind that protein and
-          carbohydrates are positively correlated, so increasing the minimum for
-          protein would typically also increase the average carbohydrates and
-          vice-versa.
+          Adjust the minimum protein and minimum carbohydrate sliders to explore
+          the data on your own. Keep in mind that protein and carbohydrates are
+          positively correlated, so increasing the minimum for protein would
+          typically also increase the average carbohydrates and vice-versa.
         </div>
       </div>
 
       <div class="scroll-graphic">
         <div class="sticky-chart">
-          <h2>
+          <h2 class="subheader">
             Average Blood Sugar Change After High Carb and High Protein Meals
           </h2>
           <div class="chart-container-fat-carb">
