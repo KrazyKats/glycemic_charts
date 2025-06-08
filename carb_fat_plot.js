@@ -810,7 +810,7 @@ scroller
       carbStat.innerHTML = "Meal Count";
 
       subheader.innerHTML =
-        "High Carbohydrate Meals Have Larger Blood Sugar Changes Than High Protein Meals";
+        "High Carbohydrate Meals Have Larger Blood Sugar Changes Than Low Carb Meals With Same Protein";
       let options = {
         blueTitle: "High Carb",
         redTitle: "Low Carb",
