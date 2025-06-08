@@ -139,8 +139,9 @@
   stroke: var(--carb-color);
 }
 
-.fat-line {
+.fat-line.line {
   stroke: var(--protein-color);
+  stroke-width: 4px;
 }
 
 .dot {
@@ -152,8 +153,9 @@
   fill: var(--carb-color);
 }
 
-.fat-dot {
+.fat-dot.dot {
   fill: var(--protein-color);
+  stroke-width: 1;
 }
 
 .grid line {

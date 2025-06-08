@@ -270,6 +270,7 @@ function createChart(carbData, fatData, options) {
     .style("opacity", 0)
     .on("mouseover", function (event, d) {
       tooltip.transition().duration(200).style("opacity", 0.9);
+      console.log(`${tooltip_top_text}`);
       tooltip
         .html(
           `
@@ -342,6 +343,8 @@ function createChart(carbData, fatData, options) {
     .style("opacity", 0)
     .on("mouseover", function (event, d) {
       tooltip.transition().duration(200).style("opacity", 0.9);
+      console.log(`${tooltip_top_text}`);
+
       tooltip
         .html(
           `
@@ -772,8 +775,8 @@ scroller
 
     // Reveal sliders only in final step
     const controls = document.querySelector(".controls-container");
-    const proteinEqualIndex = 4;
-    const interactiveIndex = 7;
+    const proteinEqualIndex = 3;
+    const interactiveIndex = 6;
     if (index >= interactiveIndex) {
       controls.style.display = "flex";
     } else {
