@@ -177,7 +177,7 @@ function createChart(carbData, fatData, options) {
   currentScales = { xScale, yScale };
 
   // Animation duration
-  const duration = 800;
+  const duration = 500;
 
   // Update grid with animation
   g.select(".x-grid")
@@ -249,7 +249,17 @@ function createChart(carbData, fatData, options) {
   const carbDots = g
     .selectAll(".carb-dot")
     .data(carbData, (d) => d.time_after_meal_minutes);
-
+  let tooltip_top_text = "High Carb Meals";
+  let tooltip_bottom_text = "High Protein Meals";
+  if (options?.annotations === "same carb") {
+    tooltip_top_text = "High Carb Meals";
+    tooltip_bottom_text = "Low Carb Meals";
+    console.log(tooltip_bottom_text);
+  } else if (options?.annotations === "same protein") {
+    tooltip_top_text = "Low Protein Meals";
+    tooltip_bottom_text = "High Protein Meals";
+  }
+  // console.log(tooltip_bottom_text)
   carbDots
     .enter()
     .append("circle")
@@ -263,7 +273,7 @@ function createChart(carbData, fatData, options) {
       tooltip
         .html(
           `
-                <strong>High Carb Meals</strong><br/>
+                <strong>${tooltip_top_text}</strong><br/>
                 Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
                 Glucose Diff: ${
                   d.glucose_diff > 0 ? "+" : ""
@@ -335,7 +345,7 @@ function createChart(carbData, fatData, options) {
       tooltip
         .html(
           `
-                <strong>High Protein Meals</strong><br/>
+                <strong>${tooltip_bottom_text}</strong><br/>
                 Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
                 Glucose Diff: ${
                   d.glucose_diff > 0 ? "+" : ""
@@ -422,7 +432,6 @@ function createChart(carbData, fatData, options) {
     if (options?.redTitle !== undefined) {
       redTitle = options.redTitle;
     }
-    // console.log(`redTitle: ${redTitle}`)
 
     legendData.push({
       label: redTitle,
@@ -502,20 +511,8 @@ function createChart(carbData, fatData, options) {
   const g_elem = d3.select("#chart_fat_carb > svg > g");
   // g_elem.selectAll(".difference-box").remove();
   if (options?.annotations === "same carb") {
-    // drawVerticalLine(
-    //   g_elem,
-    //   233.8235294117647,
-    //   16.693121693121746,
-    //   79.65608465608462
-    // );
-    // drawVerticalLine(
-    //   g_elem,
-    //   498.8235294117647,
-    //   139.46389151687163,
-    //   155.76777560339207
-    // );
-    document.documentElement.style.setProperty("--carb-color", "red");
-    document.documentElement.style.setProperty("--protein-color", "green");
+    document.documentElement.style.setProperty("--carb-color", "#F57C00"); // orange
+    document.documentElement.style.setProperty("--protein-color", "#1976D2"); // blue
     if (d3.selectAll(".same_carb").size() === 0) {
       drawBox(
         g_elem,
@@ -551,9 +548,13 @@ function createChart(carbData, fatData, options) {
         "same_carb diff_annot"
       );
     }
+  } else if (options?.annotations === "same protein") {
+    document.documentElement.style.setProperty("--carb-color", "#D32F2F"); // Deep red
+    document.documentElement.style.setProperty("--protein-color", "#4CAF50"); // Forest green
+    g_elem.selectAll(".diff_annot").remove();
   } else {
-    document.documentElement.style.setProperty("--carb-color", "red");
-    document.documentElement.style.setProperty("--protein-color", "blue");
+    document.documentElement.style.setProperty("--carb-color", "#D32F2F"); // orange
+    document.documentElement.style.setProperty("--protein-color", "#1976D2"); // blue
     g_elem.selectAll(".diff_annot").remove();
   }
 }
@@ -643,7 +644,6 @@ function updateChart() {
 }
 
 function updateChart_fixed(carbPercentile, fatPercentile, options) {
-
   // this should be redundant but I will keep for sanity check
   if (carbPercentile === undefined || fatPercentile === undefined) {
     carbPercentile = parseInt(carbSlider.value);
@@ -729,7 +729,6 @@ async function loadData() {
 
 // create button to set chart to specific carb and fat percentiles
 function fixed_transform(carbPercentile, fatPercentile, options) {
-
   // If no percentiles are provided, use the current slider values
   if (carbPercentile === undefined) {
     carbPercentile = parseInt(carbSlider.value);
@@ -741,8 +740,13 @@ function fixed_transform(carbPercentile, fatPercentile, options) {
   const actualValue_fat = getValueAtPercentile(fatPercentiles, fatPercentile);
   fatValue.textContent = `${fatPercentile}% (${actualValue_fat.toFixed(1)}g)`;
 
-  const actualValue_carb = getValueAtPercentile(carbPercentiles,carbPercentile);
-  carbValue.textContent = `${carbPercentile}% (${actualValue_carb.toFixed(1)}g)`;
+  const actualValue_carb = getValueAtPercentile(
+    carbPercentiles,
+    carbPercentile
+  );
+  carbValue.textContent = `${carbPercentile}% (${actualValue_carb.toFixed(
+    1
+  )}g)`;
 
   // Update the chart with the selected percentiles
   updateChart_fixed(carbPercentile, fatPercentile, options);
@@ -751,6 +755,9 @@ function fixed_transform(carbPercentile, fatPercentile, options) {
   carbSlider.value = carbPercentile;
   fatSlider.value = fatPercentile;
 }
+const subheader = document.querySelector(".sticky-chart > .subheader");
+const carbStat = document.querySelector(".stat-box.carb-stat .stat-label");
+const fatStat = document.querySelector(".stat-box.fat-stat .stat-label");
 
 const scroller = scrollama();
 
@@ -765,33 +772,50 @@ scroller
 
     // Reveal sliders only in final step
     const controls = document.querySelector(".controls-container");
-    const carbEqualIndex = 4;
-    const interactiveIndex = 6;
+    const proteinEqualIndex = 4;
+    const interactiveIndex = 7;
     if (index >= interactiveIndex) {
       controls.style.display = "flex";
     } else {
       controls.style.display = "none";
     }
-    if (index < carbEqualIndex) {
+    if (index < proteinEqualIndex) {
+      fatStat.innerHTML = "Meal Count";
+      carbStat.innerHTML = "Meal Count";
+
+      subheader.innerHTML =
+        "High Carbohydrate Meals Have Larger Blood Sugar Changes Than High Protein Meals";
+      let options = {
+        blueTitle: "High Carb",
+        redTitle: "Low Carb",
+        annotations: "same protein",
+      };
+      fixed_transform(75, 34, options);
+    }
+
+    if (index >= proteinEqualIndex && index < interactiveIndex) {
       let options = {
         blueTitle: "Low Protein",
         redTitle: "High Protein",
         annotations: "same carb",
       };
+      subheader.innerHTML =
+        "High Protein Meals Have Flatter Blood Sugar Changes Than Low Protein Meals With Same Carb";
       fixed_transform(45, 72, options);
-    }
-
-    if (index >= carbEqualIndex && index < interactiveIndex) {
-      let options = { blueTitle: "High Carb", redTitle: "Low Carb" };
-      fixed_transform(75, 34, options);
+      fatStat.innerHTML = "Meal Count";
+      carbStat.innerHTML = "Meal Count";
     }
 
     if (index >= interactiveIndex) {
+      subheader.innerHTML =
+        "Interactive Blood Sugar Change After High Carb and High Protein Meals";
+      fatStat.innerHTML = "High Protein Meals";
+      carbStat.innerHTML = "High Carb Meals";
       fixed_transform(); // reset to default interactive
     }
 
     // Add your custom event logic here per index
-    console.log("Entered step:", index);
+    // console.log("Entered step:", index);
   });
 
 // Load data when page loads
