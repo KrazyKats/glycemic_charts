@@ -410,7 +410,7 @@ function createChart(carbData, fatData, options) {
       `High Carb (≥${carbPercentile}% / ${carbActualValue.toFixed(1)}g)`;
     legendData.push({
       label: blueTitle,
-      color: "#e74c3c",
+      class_item: "carb-legend",
     });
   }
   if (fatData.length > 0) {
@@ -426,7 +426,7 @@ function createChart(carbData, fatData, options) {
 
     legendData.push({
       label: redTitle,
-      color: "#3498db",
+      class_item: "protein-legend",
     });
   }
 
@@ -441,7 +441,7 @@ function createChart(carbData, fatData, options) {
   const legendEnter = legendItems
     .enter()
     .append("g")
-    .attr("class", "legend-item")
+    .attr("class", d => d.class_item + ` legend-item`)
     .style("opacity", 0);
 
   legendEnter
@@ -475,17 +475,17 @@ function createChart(carbData, fatData, options) {
     .style("opacity", 1)
     .attr("transform", (d, i) => `translate(0, ${i * 25})`);
 
-  legendUpdate
-    .select("line")
-    .transition()
-    .duration(duration)
-    .style("stroke", (d) => d.color);
+  // legendUpdate
+  //   .select("line")
+  //   .transition()
+  //   .duration(duration)
+  //   .style("stroke", (d) => d.color);
 
-  legendUpdate
-    .select("circle")
-    .transition()
-    .duration(duration)
-    .style("fill", (d) => d.color);
+  // legendUpdate
+  //   .select("circle")
+  //   .transition()
+  //   .duration(duration)
+  //   .style("class", (d) => d.class);
 
   legendUpdate
     .select("text")
@@ -597,7 +597,8 @@ function drawBox(g, x1, x2, yStart, yEnd, className) {
     .attr("height", Math.abs(yEnd - yStart))
     .style("stroke", "#333")
     .style("stroke-width", 1)
-    .style("opacity", 0.5);
+    .style("opacity", 0.5)
+    .style("fill", "none");
 }
 
 // function drawVerticalLine(g, x, yStart, yEnd) {

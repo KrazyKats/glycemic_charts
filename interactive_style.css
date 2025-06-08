@@ -1,5 +1,5 @@
 html {
-  --carb-color:orange;
+  --carb-color: orange;
   --protein-color: #2e86ab;
 }
 .chart-container-fat-carb {
@@ -182,10 +182,22 @@ html {
   stroke-dasharray: 3, 3;
 }
 
-.legend {
+#chart_fat_carb .legend {
   font-size: 14px;
 }
+#chart_fat_carb .legend-item.carb-legend circle  {
+  fill: var(--carb-color);
+}
+#chart_fat_carb .legend-item.carb-legend  line {
+  stroke: var(--carb-color);
+}
 
+#chart_fat_carb .legend-item.protein-legend  circle{
+  fill: var(--protein-color);
+}
+#chart_fat_carb .legend-item.protein-legend line {
+  stroke: var(--protein-color);
+}
 .legend-item {
   cursor: pointer;
 }
@@ -263,7 +275,7 @@ html {
 }
 
 #carbSlider::-moz-range-thumb {
-  background: var(--carb-color)
+  background: var(--carb-color);
 }
 
 #carbSlider:hover {
