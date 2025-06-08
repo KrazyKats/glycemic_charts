@@ -227,7 +227,27 @@ function createChart(carbData, fatData, options) {
     .y((d) => yScale(d.glucose_diff))
     .curve(d3.curveMonotoneX);
 
-  // Animate carb line and points
+  // Function to get tooltip labels based on options
+  function getTooltipLabels() {
+    if (options?.annotations === "same carb") {
+      return {
+        top: "Low Protein Meals",
+        bottom: "High Protein Meals"
+      };
+    } else if (options?.annotations === "same protein") {
+      return {
+        top: "High Carb Meals", 
+        bottom: "Low Carb Meals"
+      };
+    } else {
+      return {
+        top: "High Carb Meals",
+        bottom: "High Protein Meals"
+      };
+    }
+  }
+
+  // Animate carb line
   const carbLine = g
     .selectAll(".carb-line")
     .data(carbData.length > 0 ? [carbData] : []);
@@ -245,21 +265,14 @@ function createChart(carbData, fatData, options) {
 
   carbLine.exit().transition().duration(duration).style("opacity", 0).remove();
 
+  // Remove old carb dots to ensure clean event handlers
+  g.selectAll(".carb-dot").remove();
+
   // Animate carb dots
   const carbDots = g
     .selectAll(".carb-dot")
     .data(carbData, (d) => d.time_after_meal_minutes);
-  let tooltip_top_text = "High Carb Meals";
-  let tooltip_bottom_text = "High Protein Meals";
-  if (options?.annotations === "same carb") {
-    tooltip_top_text = "High Carb Meals";
-    tooltip_bottom_text = "Low Carb Meals";
-    console.log(tooltip_bottom_text);
-  } else if (options?.annotations === "same protein") {
-    tooltip_top_text = "Low Protein Meals";
-    tooltip_bottom_text = "High Protein Meals";
-  }
-  // console.log(tooltip_bottom_text)
+
   carbDots
     .enter()
     .append("circle")
@@ -269,12 +282,12 @@ function createChart(carbData, fatData, options) {
     .attr("cy", (d) => yScale(d.glucose_diff))
     .style("opacity", 0)
     .on("mouseover", function (event, d) {
+      const labels = getTooltipLabels();
       tooltip.transition().duration(200).style("opacity", 0.9);
-      console.log(`${tooltip_top_text}`);
       tooltip
         .html(
           `
-                <strong>${tooltip_top_text}</strong><br/>
+                <strong>${labels.top}</strong><br/>
                 Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
                 Glucose Diff: ${
                   d.glucose_diff > 0 ? "+" : ""
@@ -295,20 +308,6 @@ function createChart(carbData, fatData, options) {
     .delay((d, i) => i * 50)
     .attr("r", 4)
     .style("opacity", 1);
-
-  carbDots
-    .transition()
-    .duration(duration)
-    .attr("cx", (d) => xScale(d.time_after_meal_minutes))
-    .attr("cy", (d) => yScale(d.glucose_diff));
-
-  carbDots
-    .exit()
-    .transition()
-    .duration(duration)
-    .attr("r", 0)
-    .style("opacity", 0)
-    .remove();
 
   // Animate fat line and points
   const fatLine = g
@@ -328,6 +327,9 @@ function createChart(carbData, fatData, options) {
 
   fatLine.exit().transition().duration(duration).style("opacity", 0).remove();
 
+  // Remove old fat dots to ensure clean event handlers
+  g.selectAll(".fat-dot").remove();
+
   // Animate fat dots
   const fatDots = g
     .selectAll(".fat-dot")
@@ -342,13 +344,12 @@ function createChart(carbData, fatData, options) {
     .attr("cy", (d) => yScale(d.glucose_diff))
     .style("opacity", 0)
     .on("mouseover", function (event, d) {
+      const labels = getTooltipLabels();
       tooltip.transition().duration(200).style("opacity", 0.9);
-      console.log(`${tooltip_top_text}`);
-
       tooltip
         .html(
           `
-                <strong>${tooltip_bottom_text}</strong><br/>
+                <strong>${labels.bottom}</strong><br/>
                 Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
                 Glucose Diff: ${
                   d.glucose_diff > 0 ? "+" : ""
@@ -369,20 +370,6 @@ function createChart(carbData, fatData, options) {
     .delay((d, i) => i * 50)
     .attr("r", 4)
     .style("opacity", 1);
-
-  fatDots
-    .transition()
-    .duration(duration)
-    .attr("cx", (d) => xScale(d.time_after_meal_minutes))
-    .attr("cy", (d) => yScale(d.glucose_diff));
-
-  fatDots
-    .exit()
-    .transition()
-    .duration(duration)
-    .attr("r", 0)
-    .style("opacity", 0)
-    .remove();
 
   // Update axes with animation
   g.select(".x-axis")
@@ -487,18 +474,6 @@ function createChart(carbData, fatData, options) {
     .style("opacity", 1)
     .attr("transform", (d, i) => `translate(0, ${i * 25})`);
 
-  // legendUpdate
-  //   .select("line")
-  //   .transition()
-  //   .duration(duration)
-  //   .style("stroke", (d) => d.color);
-
-  // legendUpdate
-  //   .select("circle")
-  //   .transition()
-  //   .duration(duration)
-  //   .style("class", (d) => d.class);
-
   legendUpdate
     .select("text")
     .transition()
@@ -511,13 +486,15 @@ function createChart(carbData, fatData, options) {
     .duration(duration)
     .style("opacity", 0)
     .remove();
+  
   const g_elem = d3.select("#chart_fat_carb > svg > g");
-  // g_elem.selectAll(".difference-box").remove();
+  
   if (options?.annotations === "same carb") {
     document.documentElement.style.setProperty("--carb-color", "#F57C00"); // orange
     document.documentElement.style.setProperty("--protein-color", "#1976D2"); // blue
     if (d3.selectAll(".same_carb").size() === 0) {
-      drawBox(
+      // Animate the first box
+      const box1 = drawBox(
         g_elem,
         xScale(40),
         xScale(80),
@@ -525,7 +502,9 @@ function createChart(carbData, fatData, options) {
         yScale(30),
         "same_carb diff_annot"
       );
-      drawBox(
+      
+      // Animate the second box with a delay
+      const box2 = drawBox(
         g_elem,
         xScale(120),
         xScale(145),
@@ -533,9 +512,8 @@ function createChart(carbData, fatData, options) {
         yScale(15),
         "same_carb diff_annot"
       );
-
-      //155.76777560339207
-      //<circle class="dot fat-dot" r="2.0446633437500004" cx="498.8235294117647" cy="139.46389151687163" style="opacity: 0.511166;"></circle>
+      
+      // Add text annotations with fade-in
       addText(
         g_elem,
         xScale(125),
@@ -576,6 +554,7 @@ function animateNumber(element, from, to, duration = 500) {
   };
   animate();
 }
+
 function addText(g, x, y, text, className = "difference-text") {
   const lines = text.split("\n");
   const lineHeight = 16; // Adjust based on font size
@@ -591,36 +570,39 @@ function addText(g, x, y, text, className = "difference-text") {
       .style("font-size", "14px")
       .style("fill", "#333")
       .style("font-weight", "normal")
-      .text(line);
+      .style("opacity", 0)
+      .text(line)
+      .transition()
+      .duration(800)
+      .delay(600 + i * 100)
+      .style("opacity", 1);
   });
 }
 
 function drawBox(g, x1, x2, yStart, yEnd, className) {
-  return g
+  const box = g
     .append("rect")
     .attr("class", className)
     .attr("x", Math.min(x1, x2))
     .attr("y", Math.min(yStart, yEnd))
-    .attr("width", Math.abs(x2 - x1))
-    .attr("height", Math.abs(yEnd - yStart))
+    .attr("width", 0)
+    .attr("height", 0)
     .style("stroke", "#333")
     .style("stroke-width", 1)
-    .style("opacity", 0.5)
+    .style("opacity", 0)
     .style("fill", "none");
+  
+  // Animate the box appearance
+  box
+    .transition()
+    .duration(600)
+    .delay(300)
+    .style("opacity", 0.5)
+    .attr("width", Math.abs(x2 - x1))
+    .attr("height", Math.abs(yEnd - yStart));
+    
+  return box;
 }
-
-// function drawVerticalLine(g, x, yStart, yEnd) {
-//   return g
-//     .append("line")
-//     .attr("class", "difference-line")
-//     .attr("x1", x)
-//     .attr("x2", x)
-//     .attr("y1", yStart)
-//     .attr("y2", yEnd)
-//     .style("stroke", "#333")
-//     .style("stroke-width", 1)
-//     .style("stroke-dasharray", null);
-// }
 
 function updateChart() {
   const carbPercentile = parseInt(carbSlider.value);
@@ -758,6 +740,7 @@ function fixed_transform(carbPercentile, fatPercentile, options) {
   carbSlider.value = carbPercentile;
   fatSlider.value = fatPercentile;
 }
+
 const subheader = document.querySelector(".sticky-chart > .subheader");
 const carbStat = document.querySelector(".stat-box.carb-stat .stat-label");
 const fatStat = document.querySelector(".stat-box.fat-stat .stat-label");
