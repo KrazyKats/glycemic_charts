@@ -643,6 +643,8 @@ function updateChart() {
 }
 
 function updateChart_fixed(carbPercentile, fatPercentile, options) {
+
+  // this should be redundant but I will keep for sanity check
   if (carbPercentile === undefined || fatPercentile === undefined) {
     carbPercentile = parseInt(carbSlider.value);
     fatPercentile = parseInt(fatSlider.value);
@@ -727,16 +729,20 @@ async function loadData() {
 
 // create button to set chart to specific carb and fat percentiles
 function fixed_transform(carbPercentile, fatPercentile, options) {
+
+  // If no percentiles are provided, use the current slider values
+  if (carbPercentile === undefined) {
+    carbPercentile = parseInt(carbSlider.value);
+  }
+  if (fatPercentile === undefined) {
+    fatPercentile = parseInt(fatSlider.value);
+  }
+
   const actualValue_fat = getValueAtPercentile(fatPercentiles, fatPercentile);
   fatValue.textContent = `${fatPercentile}% (${actualValue_fat.toFixed(1)}g)`;
 
-  const actualValue_carb = getValueAtPercentile(
-    carbPercentiles,
-    carbPercentile
-  );
-  carbValue.textContent = `${carbPercentile}% (${actualValue_carb.toFixed(
-    1
-  )}g)`;
+  const actualValue_carb = getValueAtPercentile(carbPercentiles,carbPercentile);
+  carbValue.textContent = `${carbPercentile}% (${actualValue_carb.toFixed(1)}g)`;
 
   // Update the chart with the selected percentiles
   updateChart_fixed(carbPercentile, fatPercentile, options);
@@ -780,8 +786,12 @@ scroller
       fixed_transform(75, 34, options);
     }
 
+    if (index >= interactiveIndex) {
+      fixed_transform(); // reset to default interactive
+    }
+
     // Add your custom event logic here per index
-    // console.log("Entered step:", index);
+    console.log("Entered step:", index);
   });
 
 // Load data when page loads
