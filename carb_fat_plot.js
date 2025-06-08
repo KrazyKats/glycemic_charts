@@ -441,7 +441,7 @@ function createChart(carbData, fatData, options) {
   const legendEnter = legendItems
     .enter()
     .append("g")
-    .attr("class", d => d.class_item + ` legend-item`)
+    .attr("class", (d) => d.class_item + ` legend-item`)
     .style("opacity", 0);
 
   legendEnter
@@ -514,6 +514,8 @@ function createChart(carbData, fatData, options) {
     //   139.46389151687163,
     //   155.76777560339207
     // );
+    document.documentElement.style.setProperty("--carb-color", "red");
+    document.documentElement.style.setProperty("--protein-color", "green");
     if (d3.selectAll(".same_carb").size() === 0) {
       drawBox(
         g_elem,
@@ -550,6 +552,8 @@ function createChart(carbData, fatData, options) {
       );
     }
   } else {
+    document.documentElement.style.setProperty("--carb-color", "red");
+    document.documentElement.style.setProperty("--protein-color", "blue");
     g_elem.selectAll(".diff_annot").remove();
   }
 }
