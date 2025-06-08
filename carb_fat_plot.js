@@ -167,9 +167,17 @@ function createChart(carbData, fatData, options) {
     .domain(d3.extent(allData, (d) => d.time_after_meal_minutes))
     .range([0, width]);
 
+  let yDomain = [];
+  if (options === undefined) {
+    yDomain = [0, 40];
+  }
+  else {
+    yDomain = d3.extent(allData, (d) => d.glucose_diff)
+  }
   const yScale = d3
     .scaleLinear()
-    .domain(d3.extent(allData, (d) => d.glucose_diff))
+    .domain(yDomain)
+    // .domain([0,])
     .nice()
     .range([height, 0]);
 
@@ -232,19 +240,70 @@ function createChart(carbData, fatData, options) {
     if (options?.annotations === "same carb") {
       return {
         top: "Low Protein Meals",
-        bottom: "High Protein Meals"
+        bottom: "High Protein Meals",
       };
     } else if (options?.annotations === "same protein") {
       return {
-        top: "High Carb Meals", 
-        bottom: "Low Carb Meals"
+        top: "High Carb Meals",
+        bottom: "Low Carb Meals",
       };
     } else {
       return {
         top: "High Carb Meals",
-        bottom: "High Protein Meals"
+        bottom: "High Protein Meals",
       };
     }
+  }
+
+  // Function to update tooltip event handlers
+  function updateTooltipHandlers() {
+    g.selectAll(".carb-dot")
+      .on("mouseover", function (event, d) {
+        const labels = getTooltipLabels();
+        tooltip.transition().duration(200).style("opacity", 0.9);
+        tooltip
+          .html(
+            `
+                  <strong>${labels.top}</strong><br/>
+                  Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
+                  Glucose Diff: ${
+                    d.glucose_diff > 0 ? "+" : ""
+                  }${d.glucose_diff.toFixed(1)} mg/dL<br/>
+                  Current: ${d.glucose.toFixed(1)} mg/dL<br/>
+                  Pre-meal: ${d.pre_meal_glucose.toFixed(1)} mg/dL<br/>
+                  Data points: ${d.count}
+              `
+          )
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY - 28 + "px");
+      })
+      .on("mouseout", function () {
+        tooltip.transition().duration(500).style("opacity", 0);
+      });
+
+    g.selectAll(".fat-dot")
+      .on("mouseover", function (event, d) {
+        const labels = getTooltipLabels();
+        tooltip.transition().duration(200).style("opacity", 0.9);
+        tooltip
+          .html(
+            `
+                  <strong>${labels.bottom}</strong><br/>
+                  Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
+                  Glucose Diff: ${
+                    d.glucose_diff > 0 ? "+" : ""
+                  }${d.glucose_diff.toFixed(1)} mg/dL<br/>
+                  Current: ${d.glucose.toFixed(1)} mg/dL<br/>
+                  Pre-meal: ${d.pre_meal_glucose.toFixed(1)} mg/dL<br/>
+                  Data points: ${d.count}
+              `
+          )
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY - 28 + "px");
+      })
+      .on("mouseout", function () {
+        tooltip.transition().duration(500).style("opacity", 0);
+      });
   }
 
   // Animate carb line
@@ -265,9 +324,6 @@ function createChart(carbData, fatData, options) {
 
   carbLine.exit().transition().duration(duration).style("opacity", 0).remove();
 
-  // Remove old carb dots to ensure clean event handlers
-  g.selectAll(".carb-dot").remove();
-
   // Animate carb dots
   const carbDots = g
     .selectAll(".carb-dot")
@@ -281,33 +337,25 @@ function createChart(carbData, fatData, options) {
     .attr("cx", (d) => xScale(d.time_after_meal_minutes))
     .attr("cy", (d) => yScale(d.glucose_diff))
     .style("opacity", 0)
-    .on("mouseover", function (event, d) {
-      const labels = getTooltipLabels();
-      tooltip.transition().duration(200).style("opacity", 0.9);
-      tooltip
-        .html(
-          `
-                <strong>${labels.top}</strong><br/>
-                Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
-                Glucose Diff: ${
-                  d.glucose_diff > 0 ? "+" : ""
-                }${d.glucose_diff.toFixed(1)} mg/dL<br/>
-                Current: ${d.glucose.toFixed(1)} mg/dL<br/>
-                Pre-meal: ${d.pre_meal_glucose.toFixed(1)} mg/dL<br/>
-                Data points: ${d.count}
-            `
-        )
-        .style("left", event.pageX + 10 + "px")
-        .style("top", event.pageY - 28 + "px");
-    })
-    .on("mouseout", function () {
-      tooltip.transition().duration(500).style("opacity", 0);
-    })
     .transition()
     .duration(duration)
     .delay((d, i) => i * 50)
     .attr("r", 4)
     .style("opacity", 1);
+
+  carbDots
+    .transition()
+    .duration(duration)
+    .attr("cx", (d) => xScale(d.time_after_meal_minutes))
+    .attr("cy", (d) => yScale(d.glucose_diff));
+
+  carbDots
+    .exit()
+    .transition()
+    .duration(duration)
+    .attr("r", 0)
+    .style("opacity", 0)
+    .remove();
 
   // Animate fat line and points
   const fatLine = g
@@ -327,9 +375,6 @@ function createChart(carbData, fatData, options) {
 
   fatLine.exit().transition().duration(duration).style("opacity", 0).remove();
 
-  // Remove old fat dots to ensure clean event handlers
-  g.selectAll(".fat-dot").remove();
-
   // Animate fat dots
   const fatDots = g
     .selectAll(".fat-dot")
@@ -343,33 +388,28 @@ function createChart(carbData, fatData, options) {
     .attr("cx", (d) => xScale(d.time_after_meal_minutes))
     .attr("cy", (d) => yScale(d.glucose_diff))
     .style("opacity", 0)
-    .on("mouseover", function (event, d) {
-      const labels = getTooltipLabels();
-      tooltip.transition().duration(200).style("opacity", 0.9);
-      tooltip
-        .html(
-          `
-                <strong>${labels.bottom}</strong><br/>
-                Time: ${Math.round(d.time_after_meal_minutes)} min<br/>
-                Glucose Diff: ${
-                  d.glucose_diff > 0 ? "+" : ""
-                }${d.glucose_diff.toFixed(1)} mg/dL<br/>
-                Current: ${d.glucose.toFixed(1)} mg/dL<br/>
-                Pre-meal: ${d.pre_meal_glucose.toFixed(1)} mg/dL<br/>
-                Data points: ${d.count}
-            `
-        )
-        .style("left", event.pageX + 10 + "px")
-        .style("top", event.pageY - 28 + "px");
-    })
-    .on("mouseout", function () {
-      tooltip.transition().duration(500).style("opacity", 0);
-    })
     .transition()
     .duration(duration)
     .delay((d, i) => i * 50)
     .attr("r", 4)
     .style("opacity", 1);
+
+  fatDots
+    .transition()
+    .duration(duration)
+    .attr("cx", (d) => xScale(d.time_after_meal_minutes))
+    .attr("cy", (d) => yScale(d.glucose_diff));
+
+  fatDots
+    .exit()
+    .transition()
+    .duration(duration)
+    .attr("r", 0)
+    .style("opacity", 0)
+    .remove();
+
+  // Update tooltip handlers after all dots are created/updated
+  updateTooltipHandlers();
 
   // Update axes with animation
   g.select(".x-axis")
@@ -486,9 +526,9 @@ function createChart(carbData, fatData, options) {
     .duration(duration)
     .style("opacity", 0)
     .remove();
-  
+
   const g_elem = d3.select("#chart_fat_carb > svg > g");
-  
+
   if (options?.annotations === "same carb") {
     document.documentElement.style.setProperty("--carb-color", "#F57C00"); // orange
     document.documentElement.style.setProperty("--protein-color", "#1976D2"); // blue
@@ -502,7 +542,7 @@ function createChart(carbData, fatData, options) {
         yScale(30),
         "same_carb diff_annot"
       );
-      
+
       // Animate the second box with a delay
       const box2 = drawBox(
         g_elem,
@@ -512,7 +552,7 @@ function createChart(carbData, fatData, options) {
         yScale(15),
         "same_carb diff_annot"
       );
-      
+
       // Add text annotations with fade-in
       addText(
         g_elem,
@@ -525,7 +565,7 @@ function createChart(carbData, fatData, options) {
         g_elem,
         280,
         130,
-        "High Protein Meals \nHave Lower Maximum Glucose",
+        "High Protein Meals \nHave Lower Glucose Spikes",
         "same_carb diff_annot"
       );
     }
@@ -591,7 +631,7 @@ function drawBox(g, x1, x2, yStart, yEnd, className) {
     .style("stroke-width", 1)
     .style("opacity", 0)
     .style("fill", "none");
-  
+
   // Animate the box appearance
   box
     .transition()
@@ -600,7 +640,7 @@ function drawBox(g, x1, x2, yStart, yEnd, className) {
     .style("opacity", 0.5)
     .attr("width", Math.abs(x2 - x1))
     .attr("height", Math.abs(yEnd - yStart));
-    
+
   return box;
 }
 
