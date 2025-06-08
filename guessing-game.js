@@ -248,7 +248,7 @@ legend.append('text')
     .attr('x', width / 2)
     .attr('y', -8)
     .attr('text-anchor', 'middle')
-    .text('Glucose Trace');
+    .text('Who had the Highest Glucose Difference?');
   svg.append('text')
     .attr('x', width / 2)
     .attr('y', height + 35)
@@ -259,7 +259,7 @@ legend.append('text')
     .attr('x', -height / 2)
     .attr('y', -35)
     .attr('text-anchor', 'middle')
-    .text('Glucose (mg/dL)');
+    .text('Glucose Difference from Meal Start (mg/dL)');
 
 
 
@@ -285,7 +285,7 @@ legend.append('text')
 //   }
 // });
 
-document.getElementById("item4").addEventListener("click", function () {
+document.getElementById("item4").addEventListener("click", async function () {
   const selected = document.querySelector(".option.selected");
   if (selected) {
     // Find the index of the selected button (0, 1, or 2)
@@ -294,12 +294,12 @@ document.getElementById("item4").addEventListener("click", function () {
     ).indexOf(selected);
 
     // Call plotGlucoseTraces with only the selected meal
-    let max_meal = plotGlucoseTraces(randomMeals);
+    let max_meal = await plotGlucoseTraces(randomMeals);
     console.log(max_meal);
 
     // Check if selected button matches maxKey
     const selectedMealKey = `meal ${selectedIndex + 1}`;
-    if (selectedMealKey === maxKey) {
+    if (selectedIndex+1 === max_meal) {
       // Correct selection
       alert("Correct! You picked the meal with the highest glucose spike.");
     } else {
@@ -309,4 +309,33 @@ document.getElementById("item4").addEventListener("click", function () {
   } else {
     alert("Please select a meal option before confirming.");
   }
+});
+
+document.getElementById("item5").addEventListener("click", function () {
+
+  randomMeals = [];
+
+  // Get 3 unique meals
+  while (randomMeals.length !== 3) {
+    meal = getRandomInt(0, JSONlength);
+    if (randomMeals.includes(meal)) {
+      continue;
+    }
+    randomMeals.push(meal);
+  }
+
+  highestSpike = {};
+  for (let i = 0; i < randomMeals.length; i++) {
+    highestSpike[`meal ${i + 1}`] = motherJSON[randomMeals[i]].glucose_spike;
+  }
+
+  // Bind randomMeals to the buttons and update their HTML
+  d3.selectAll(".option")
+    .data(randomMeals)
+    .html((d, i) => `Meal ${i+1} |
+                    Carb content: ${motherJSON[d].total_carb.toFixed(2)}
+                    Protein content: ${motherJSON[d].protein.toFixed(2)}`);  
+
+  d3.select('.guess-graph').selectAll('*').remove();
+  d3.select('.guess-legend').selectAll('*').remove();
 });

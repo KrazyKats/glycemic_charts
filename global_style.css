@@ -462,9 +462,20 @@ nav a.active {
   margin-top: 16px; /* Optional: space above the button row */
 }
 
+/* Center the buttons and add spacing */
+.logic-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 24px; /* Space between buttons */
+  margin-top: 16px; /* Optional: space above the button row */
+}
+
 /* Add padding to the buttons for a larger click area */
 .option,
-.confirm-button {
+.confirm-button,
+.reset-button {
   padding: 10px 24px;
   font-size: 1rem;
   border-radius: 6px;
