@@ -32,18 +32,17 @@
         <ul class="navbar">
           <a href="./index.html">Dashboard</a>
           <a href="./writeup.html">Writeup</a>
-          <a href="./about.html">About</a>
         </ul>
       </nav>
       <div class="description" id="intro-text">
         <p>
-          Lots of new sensor data from wearable devices allows us detailed access to information 
+          Lots of new sensor data from wearable devices allows us detailed access to information
           about blood glucose levels — the sugar in your blood. By leveraging data collected through these sensors,
-          we can uncover more insights into your health. 
+          we can uncover more insights into your health.
         </p>
         <p>
           This project uses data from a <a href="https://physionet.org/content/big-ideas-glycemic-wearable/1.1.2/">study</a>
-          that tracked glucose and other physiological markers in 12 participants over 10 days. 
+          that tracked glucose and other physiological markers in 12 participants over 10 days.
           While the study aimed to assess the feasibility of wearable devices in
           detecting early signs of physiological changes related to prediabetes and hyperglycemia,
           our project zooms in on a specific aspect of the data. In particular, we focus on the impact of
@@ -52,10 +51,10 @@
 
         <strong>What is Blood Sugar and Why Is It Important?</strong>
         <p>
-          <a href="https://en.wikipedia.org/wiki/Blood_sugar_level">Blood sugar</a> is a measure of 
-          the concentration of <a href="https://en.wikipedia.org/wiki/Glucose">glucose</a> in your blood. 
-          Keeping it steady is essential,and your body produces hormones like insulin to help regulate it. 
-          However, glucose levels can fluctuate quite a bit — especially after meals. 
+          <a href="https://en.wikipedia.org/wiki/Blood_sugar_level">Blood sugar</a> is a measure of
+          the concentration of <a href="https://en.wikipedia.org/wiki/Glucose">glucose</a> in your blood.
+          Keeping it steady is essential,and your body produces hormones like insulin to help regulate it.
+          However, glucose levels can fluctuate quite a bit — especially after meals.
           If glucose levels frequently spike sharply, then your body can get overwhelmed.
           These blood glucose spikes can lead to a range of issues, including:
         </p>
@@ -134,7 +133,7 @@
       <div class="description" id="intro-text">
         <strong>What is a Blood Sugar <i>Spike</i>?</strong>
         <p>
-          Speaking of sugar spikes, it's important we define what a “blood glucose spike” even is. 
+          Speaking of sugar spikes, it's important we define what a “blood glucose spike” even is.
           For our purposes, we define a blood glucose spike as the sharp increase in blood sugar
           that occurs after a meal. Specifically, we calculate it like this:
         </p>
@@ -153,7 +152,7 @@
         <p>
           Also, you may have noticed that blood glucose levels are measured in mg/dL, which stands for milligrams per deciliter.
           Intuitively, this means we're measuring the amount of glucose (in milligrams) present in a small volume of blood
-          (a deciliter is one-tenth of a liter). In simpler terms, mg/dL tells us how concentrated the sugar is in 
+          (a deciliter is one-tenth of a liter). In simpler terms, mg/dL tells us how concentrated the sugar is in
           your bloodstream.
         </p>
       </div>
@@ -199,12 +198,12 @@
           <div class="chart-description">
             <p>
               As the carbohydrate content of meals increases, we observe a steady and noticeable rise
-              in the corresponding post-meal blood sugar spikes. 
+              in the corresponding post-meal blood sugar spikes.
             </p>
             <p>
               This supports the intuitive idea that meals higher in carbohydrates are consistently
-              <i>linked</i> to higher blood sugar spikes. 
-              There's a positive <a href="https://www.mathsisfun.com/data/correlation.html">correlation</a> 
+              <i>linked</i> to higher blood sugar spikes.
+              There's a positive <a href="https://www.mathsisfun.com/data/correlation.html">correlation</a>
               between carbohydrate content and average glucose spike values across the meals.
             </p>
             <p>
@@ -225,13 +224,13 @@
         <div class="chart-row">
           <div class="chart-description">
             <p>
-              We observe an upward trend between protein content and glucose spikes, 
-              though this trend is less pronounced than the one we saw with 
-              carbohydrates. 
+              We observe an upward trend between protein content and glucose spikes,
+              though this trend is less pronounced than the one we saw with
+              carbohydrates.
             </p>
 
             <p>
-              However, we can't immediately conclude that protein is directly 
+              However, we can't immediately conclude that protein is directly
               orrelated with blood sugar spikes. In these meals, the protein content
               and carbohydrate content are <strong>positively correlated</strong> (r = 0.43), likely
               because calorie-dense meals tend to contain higher amounts of both protein
@@ -239,8 +238,8 @@
             </p>
             <p>
               As a result, the positive trend between protein levels and blood sugar spikes
-              may be influenced by the <a href="https://en.wikipedia.org/wiki/Confounding">confounding effect</a> 
-              of carbohydrates. 
+              may be influenced by the <a href="https://en.wikipedia.org/wiki/Confounding">confounding effect</a>
+              of carbohydrates.
             </p>
             <p>
               To better understand the true impact of protein on blood sugar spikes,
@@ -308,12 +307,12 @@
         <div class="step">
           <p>
             First, we apply thresholds: meals with at least a moderate amount of protein
-            (above the 34th percentile) are shown in green, while those with high carbs 
+            (above the 34th percentile) are shown in green, while those with high carbs
             (above the 75th percentile) are shown in red.
           </p>
           <p>
-            Because protein and carbs are correlated, both meal types end up with similar average carb content — 
-            but very different levels of protein. This helps us control for carbs and 
+            Because protein and carbs are correlated, both meal types end up with similar average carb content —
+            but very different levels of protein. This helps us control for carbs and
             <strong>isolate how protein affects blood sugar</strong>.
           </p>
 
@@ -323,24 +322,24 @@
         </div>
         <div class="step">
           <p>
-            The result? We re-affirm our previous conclusion that higher carbohydrates have higher blood sugar spikes. 
+            The result? We re-affirm our previous conclusion that higher carbohydrates have higher blood sugar spikes.
           </p>
           <p>
             And when protein levels are similar, both lines have a similar shape — the "flatness" doesn't change much.
           </p>
         </div>
         <div class="step">
-          Now, we flip the script. This time, we control for carbs and 
+          Now, we flip the script. This time, we control for carbs and
           <strong>focus on how protein affects glucose response</strong>.
         </div>
         <div class="step">
           <p>
-            Surprisingly, the high-protein (blue) line stays flatter and has a 
+            Surprisingly, the high-protein (blue) line stays flatter and has a
             <strong>lower peak</strong> compared to the low-protein (orange) one.
           </p>
           <p>
             So even though it looked like protein didn't matter earlier, once we control for carbs,
-            we see that protein actually helps reduce blood sugar spikes. 
+            we see that protein actually helps reduce blood sugar spikes.
           </p>
           <p>
             This overturns the initial impression from the bar charts above.
@@ -348,8 +347,8 @@
         </div>
         <div class="step">
           <p>
-            Overall, this supports the idea that more carbs lead to bigger spikes. But pairing carbs with protein can help flatten those changes. 
-            According to the 
+            Overall, this supports the idea that more carbs lead to bigger spikes. But pairing carbs with protein can help flatten those changes.
+            According to the
             <a
               href="https://joslin.org/news-stories/all-news-stories/education/2021/07/carbs-protein-fats"
               >Joslin Diabetes Center
