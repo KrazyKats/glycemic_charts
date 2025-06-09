@@ -141,7 +141,6 @@
 
 .fat-line.line {
   stroke: var(--protein-color);
-  stroke-width: 4px;
 }
 
 .dot {
@@ -155,7 +154,6 @@
 
 .fat-dot.dot {
   fill: var(--protein-color);
-  stroke-width: 1;
 }
 
 .grid line {
@@ -187,14 +185,14 @@
 #chart_fat_carb .legend {
   font-size: 14px;
 }
-#chart_fat_carb .legend-item.carb-legend circle  {
+#chart_fat_carb .legend-item.carb-legend circle {
   fill: var(--carb-color);
 }
-#chart_fat_carb .legend-item.carb-legend  line {
+#chart_fat_carb .legend-item.carb-legend line {
   stroke: var(--carb-color);
 }
 
-#chart_fat_carb .legend-item.protein-legend  circle{
+#chart_fat_carb .legend-item.protein-legend circle {
   fill: var(--protein-color);
 }
 #chart_fat_carb .legend-item.protein-legend line {
