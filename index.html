@@ -14,14 +14,16 @@
     <script src="stabilize_bar_plot.js" type="module"></script>
     <script src="carb_fat_plot.js" type="module"></script>
     <script src="guessing-game.js" type="module"></script>
-    <script type="text/javascript" async
-      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
-    </script>
+    <script
+      type="text/javascript"
+      async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"
+    ></script>
   </head>
 
   <body>
     <header>
-      <h1>Glycemic Comparisons</h1>
+      <h1>A Meal In Proportions</h1>
       <p>
         Visualizing How Proteins and Carbohydrates Impact Blood Sugar Levels
       </p>
@@ -36,27 +38,39 @@
       </nav>
       <div class="description" id="intro-text">
         <p>
-          Lots of new sensor data from wearable devices allows us detailed access to information
-          about blood glucose levels — the sugar in your blood. By leveraging data collected through these sensors,
-          we can uncover more insights into your health.
+          Lots of new sensor data from wearable devices allows us detailed
+          access to information about blood glucose levels — the sugar in your
+          blood. By leveraging data collected through these sensors, we can
+          uncover more insights into your health.
         </p>
         <p>
-          This project uses data from a <a href="https://physionet.org/content/big-ideas-glycemic-wearable/1.1.2/">study</a>
-          that tracked glucose and other physiological markers in 12 participants over 10 days.
-          While the study aimed to assess the feasibility of wearable devices in
-          detecting early signs of physiological changes related to prediabetes and hyperglycemia,
-          our project zooms in on a specific aspect of the data. In particular, we focus on the impact of
-          <strong>proteins</strong> and <strong>carbohydrates</strong> on blood sugar levels.
+          This project uses data from a
+          <a
+            href="https://physionet.org/content/big-ideas-glycemic-wearable/1.1.2/"
+            >study</a
+          >
+          that tracked glucose and other physiological markers in 12
+          participants over 10 days. While the study aimed to assess the
+          feasibility of wearable devices in detecting early signs of
+          physiological changes related to prediabetes and hyperglycemia, our
+          project zooms in on a specific aspect of the data. In particular, we
+          focus on the impact of
+          <strong>proteins</strong> and <strong>carbohydrates</strong> on blood
+          sugar levels.
         </p>
 
         <strong>What is Blood Sugar and Why Is It Important?</strong>
         <p>
-          <a href="https://en.wikipedia.org/wiki/Blood_sugar_level">Blood sugar</a> is a measure of
-          the concentration of <a href="https://en.wikipedia.org/wiki/Glucose">glucose</a> in your blood.
-          Keeping it steady is essential,and your body produces hormones like insulin to help regulate it.
-          However, glucose levels can fluctuate quite a bit — especially after meals.
-          If glucose levels frequently spike sharply, then your body can get overwhelmed.
-          These blood glucose spikes can lead to a range of issues, including:
+          <a href="https://en.wikipedia.org/wiki/Blood_sugar_level"
+            >Blood sugar</a
+          >
+          is a measure of the concentration of
+          <a href="https://en.wikipedia.org/wiki/Glucose">glucose</a> in your
+          blood. Keeping it steady is essential,and your body produces hormones
+          like insulin to help regulate it. However, glucose levels can
+          fluctuate quite a bit — especially after meals. If glucose levels
+          frequently spike sharply, then your body can get overwhelmed. These
+          blood glucose spikes can lead to a range of issues, including:
         </p>
         <ol>
           <li>
@@ -66,15 +80,15 @@
           </li>
           <li>
             <strong>Vascular damage:</strong> Frequent blood sugar spikes can
-            damage the linings of blood vessels, which can lead to nerve, kidney,
-            and heart problems.
+            damage the linings of blood vessels, which can lead to nerve,
+            kidney, and heart problems.
           </li>
         </ol>
         <p>
-          In contrast, keeping your blood sugar stable provides a more consistent
-          flow of energy, helping you avoid crashes and feel more balanced
-          throughout the day. That's why understanding what causes these changes
-          is crucial.
+          In contrast, keeping your blood sugar stable provides a more
+          consistent flow of energy, helping you avoid crashes and feel more
+          balanced throughout the day. That's why understanding what causes
+          these changes is crucial.
         </p>
       </div>
       <section id="glucose-intro" class="chart-legend-container">
@@ -87,10 +101,10 @@
           <svg id="intro-viz"></svg>
 
           <p class="intro-description">
-            As shown in this plot, the red participant's blood sugar levels after eating
-            high-carbohydrate cinnamon rolls differ significantly from the blue participant's
-            response to high-protein turkey wings. This highlights how different foods can impact
-            blood sugar levels.
+            As shown in this plot, the red participant's blood sugar levels
+            after eating high-carbohydrate cinnamon rolls differ significantly
+            from the blue participant's response to high-protein turkey wings.
+            This highlights how different foods can impact blood sugar levels.
           </p>
           <p class="intro-description">
             Different bites, different sugar spikes.
@@ -133,39 +147,46 @@
       <div class="description" id="intro-text">
         <strong>What is a Blood Sugar <i>Spike</i>?</strong>
         <p>
-          Speaking of sugar spikes, it's important we define what a “blood glucose spike” even is.
-          For our purposes, we define a blood glucose spike as the sharp increase in blood sugar
-          that occurs after a meal. Specifically, we calculate it like this:
+          Speaking of sugar spikes, it's important we define what a “blood
+          glucose spike” even is. For our purposes, we define a blood glucose
+          spike as the sharp increase in blood sugar that occurs after a meal.
+          Specifically, we calculate it like this:
         </p>
         <p>
-          \[
-          \text{Spike} = \text{Max Glucose (2 hours after meal)} - \text{Average Glucose (before meal)}
-          \]
+          \[ \text{Spike} = \text{Max Glucose (2 hours after meal)} -
+          \text{Average Glucose (before meal)} \]
         </p>
         <p>
-          That is, using the <strong>meal time as a reference point (time = 0)</strong>,
-          we look at the <strong>highest blood glucose value</strong> in the 2 hours that follow,
-          and subtract the <strong>average blood glucose</strong> from the 30 minutes that came before.
-          The result tells us how much a person's blood sugar rose in response to eating.
+          That is, using the
+          <strong>meal time as a reference point (time = 0)</strong>, we look at
+          the <strong>highest blood glucose value</strong> in the 2 hours that
+          follow, and subtract the <strong>average blood glucose</strong> from
+          the 30 minutes that came before. The result tells us how much a
+          person's blood sugar rose in response to eating.
         </p>
         <strong>Units</strong>
         <p>
-          Also, you may have noticed that blood glucose levels are measured in mg/dL, which stands for milligrams per deciliter.
-          Intuitively, this means we're measuring the amount of glucose (in milligrams) present in a small volume of blood
-          (a deciliter is one-tenth of a liter). In simpler terms, mg/dL tells us how concentrated the sugar is in
-          your bloodstream.
+          Also, you may have noticed that blood glucose levels are measured in
+          mg/dL, which stands for milligrams per deciliter. Intuitively, this
+          means we're measuring the amount of glucose (in milligrams) present in
+          a small volume of blood (a deciliter is one-tenth of a liter). In
+          simpler terms, mg/dL tells us how concentrated the sugar is in your
+          bloodstream.
         </p>
       </div>
       <section class="guessing-game">
         <div class="guess-left">
           <div class="instructions">
             <p class="text-instruct">
-              Let's see how well you can predict blood glucose spikes. Below are 3 meals from the study participants,
-              along with their <strong>protein</strong> and <strong>carbohydrate</strong> content.
+              Let's see how well you can predict blood glucose spikes. Below are
+              3 meals from the study participants, along with their
+              <strong>protein</strong> and
+              <strong>carbohydrate</strong> content.
             </p>
             <p class="text-instruct">Your Task:</p>
             <p class="text-instruct">
-              Choose which meal will have the highest glucose spike given the protein and carbohydrate content.
+              Choose which meal will have the highest glucose spike given the
+              protein and carbohydrate content.
             </p>
           </div>
           <div class="ranking">
@@ -192,22 +213,28 @@
 
       <section class="chart-section">
         <h2 class="subheader">
-          High Carb Meals Are Typically Followed With High Blood Sugar Spikes
+          High Carb Meals Are Typically Followed By High Blood Sugar Spikes
         </h2>
         <div class="chart-row">
           <div class="chart-description">
             <p>
-              As the carbohydrate content of meals increases, we observe a steady and noticeable rise
-              in the corresponding post-meal blood sugar spikes.
+              As the carbohydrate content of meals increases, we observe a
+              steady and noticeable rise in the corresponding post-meal blood
+              sugar spikes.
             </p>
             <p>
-              This supports the intuitive idea that meals higher in carbohydrates are consistently
-              <i>linked</i> to higher blood sugar spikes.
-              There's a positive <a href="https://www.mathsisfun.com/data/correlation.html">correlation</a>
-              between carbohydrate content and average glucose spike values across the meals.
+              This supports the intuitive idea that meals higher in
+              carbohydrates are consistently
+              <i>linked</i> to higher blood sugar spikes. There's a positive
+              <a href="https://www.mathsisfun.com/data/correlation.html"
+                >correlation</a
+              >
+              between carbohydrate content and average glucose spike values
+              across the meals.
             </p>
             <p>
-              You can hover over each bar to examine the exact average glucose spike value as well as the meal count for that bin.
+              You can hover over each bar to examine the exact average glucose
+              spike value as well as the meal count for that bin.
             </p>
           </div>
           <div class="chart-visual carb-plot">
@@ -224,26 +251,30 @@
         <div class="chart-row">
           <div class="chart-description">
             <p>
-              We observe an upward trend between protein content and glucose spikes,
-              though this trend is less pronounced than the one we saw with
-              carbohydrates.
+              We observe an upward trend between protein content and glucose
+              spikes, though this trend is less pronounced than the one we saw
+              with carbohydrates.
             </p>
 
             <p>
               However, we can't immediately conclude that protein is directly
-              orrelated with blood sugar spikes. In these meals, the protein content
-              and carbohydrate content are <strong>positively correlated</strong> (r = 0.43), likely
-              because calorie-dense meals tend to contain higher amounts of both protein
+              orrelated with blood sugar spikes. In these meals, the protein
+              content and carbohydrate content are
+              <strong>positively correlated</strong> (r = 0.43), likely because
+              calorie-dense meals tend to contain higher amounts of both protein
               and carbohydrates.
             </p>
             <p>
-              As a result, the positive trend between protein levels and blood sugar spikes
-              may be influenced by the <a href="https://en.wikipedia.org/wiki/Confounding">confounding effect</a>
+              As a result, the positive trend between protein levels and blood
+              sugar spikes may be influenced by the
+              <a href="https://en.wikipedia.org/wiki/Confounding"
+                >confounding effect</a
+              >
               of carbohydrates.
             </p>
             <p>
-              To better understand the true impact of protein on blood sugar spikes,
-              we need to examine the data more closely.
+              To better understand the true impact of protein on blood sugar
+              spikes, we need to examine the data more closely.
             </p>
           </div>
           <div class="chart-visual protein-plot">
@@ -306,63 +337,71 @@
       <div class="scroll-text">
         <div class="step">
           <p>
-            First, we apply thresholds: meals with at least a moderate amount of protein
-            (above the 34th percentile) are shown in green, while those with high carbs
-            (above the 75th percentile) are shown in red.
+            First, we apply thresholds: meals with at least a moderate amount of
+            protein (above the 34th percentile) are shown in green, while those
+            with high carbs (above the 75th percentile) are shown in red.
           </p>
           <p>
-            Because protein and carbs are correlated, both meal types end up with similar average carb content —
-            but very different levels of protein. This helps us control for carbs and
+            Because protein and carbs are correlated, both meal types end up
+            with similar average carb content — but very different levels of
+            protein. This helps us control for carbs and
             <strong>isolate how protein affects blood sugar</strong>.
           </p>
-
         </div>
         <div class="step">
-          Next, we bring in time. Now you can see how glucose levels actually change over the two hours after a meal.
-        </div>
-        <div class="step">
-          <p>
-            The result? We re-affirm our previous conclusion that higher carbohydrates have higher blood sugar spikes.
-          </p>
-          <p>
-            And when protein levels are similar, both lines have a similar shape — the "flatness" doesn't change much.
-          </p>
-        </div>
-        <div class="step">
-          Now, we flip the script. This time, we control for carbs and
-          <strong>focus on how protein affects glucose response</strong>.
+          Next, we bring in time. Now you can see how glucose levels actually
+          change over the two hours after a meal.
         </div>
         <div class="step">
           <p>
-            Surprisingly, the high-protein (blue) line stays flatter and has a
-            <strong>lower peak</strong> compared to the low-protein (orange) one.
+            The result? We re-affirm our previous conclusion that higher
+            carbohydrates have higher blood sugar spikes.
           </p>
           <p>
-            So even though it looked like protein didn't matter earlier, once we control for carbs,
-            we see that protein actually helps reduce blood sugar spikes.
+            And when protein levels are similar, both lines have a similar shape
+            — the "flatness" doesn't change much.
+          </p>
+        </div>
+        <div class="step">
+          Now, we flip the script. This time, we control for carbs and focus on
+          how protein affects glucose response.
+        </div>
+        <div class="step">
+          <p class="main-takeaway">
+            After accounting for carbohydrates, we find the opposite of our
+            impression from the above bar charts!
           </p>
           <p>
-            This overturns the initial impression from the bar charts above.
+            Surprisingly, the final glucose level of the high-protein meals is
+            elevated, but its glucose spike is actually flatter than the
+            low-protein meal. Since the high-protein line is flat, we can see
+            that it provides a steadier, more consistent stream of a similar
+            amount of energy.
           </p>
         </div>
         <div class="step">
           <p>
-            Overall, this supports the idea that more carbs lead to bigger spikes. But pairing carbs with protein can help flatten those changes.
-            According to the
+            Overall, this supports the idea that more carbs lead to bigger
+            spikes. But pairing carbs with protein can help flatten those
+            changes. According to the
             <a
               href="https://joslin.org/news-stories/all-news-stories/education/2021/07/carbs-protein-fats"
-              >Joslin Diabetes Center
-            </a>,
-            protein can slow down how fast your body digests carbs — leading to a steadier release of energy instead of a quick spike.
+              >Joslin Diabetes Center </a
+            >, protein can slow down how fast your body digests carbs — leading
+            to a steadier release of energy instead of a quick spike.
           </p>
         </div>
-        <div class="step">🫵 <strong>Now it's your turn to explore!</strong></div>
+        <div class="step">
+          🫵 <strong>Now it's your turn to explore!</strong>
+        </div>
         <div class="step">
           <p>
-            Use the sliders to adjust the minimum protein and carb thresholds and see what happens.
+            Use the sliders to adjust the minimum protein and carb thresholds
+            and see what happens.
           </p>
           <p>
-            Just keep in mind: Protein and carbs tend to increase together, so raising one may also raise the other on average.
+            Just keep in mind: Protein and carbs tend to increase together, so
+            raising one may also raise the other on average.
           </p>
         </div>
       </div>

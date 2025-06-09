@@ -427,7 +427,7 @@ nav a.active {
 }
 
 .text-instruct {
-  font-size: 20px;
+  font-size: 16px;
   color: #444;
   margin-top: 18px;
   line-height: 1.5;
@@ -495,4 +495,8 @@ nav a.active {
 .option.selected {
   border: 2px solid #1a73e8;
   box-shadow: 0 0 0 2px #eaf1fb;
+}
+p.main-takeaway {
+  font-weight: bold;
+  font-size: 1.1rem;
 }
