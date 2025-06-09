@@ -69,7 +69,7 @@ d3.selectAll(".option")
   .data(randomMeals)
   .html((d, i) => `Meal ${i+1} |
                    Carb content: ${motherJSON[d].total_carb.toFixed(2)}
-                   Protein content: ${motherJSON[d].protein.toFixed(2)}`);  
+                   Protein content: ${motherJSON[d].protein.toFixed(2)}`);
 
 document.querySelectorAll('.option').forEach(btn => {
   btn.addEventListener('click', function() {
@@ -204,9 +204,10 @@ async function plotGlucoseTraces(mealInfos) {
     // Get all glucose differences after 0 minutes
     const postMeal = t.trace.filter(d => d.rel_min > 0);
     if (postMeal.length > 0) {
+      // we are taking teh avg for some reason
       const avg = postMeal.reduce((sum, d) => sum + d.glucose_value, 0) / postMeal.length;
       mealAvgs.push(avg);
-      if (avg > maxAvg) {
+      if (avg > maxAvg) { //create answer
         maxAvg = avg;
         maxMealIndex = i; // 0-based index: 0 for meal 1, 1 for meal 2, etc.
       }
@@ -334,7 +335,7 @@ document.getElementById("item5").addEventListener("click", function () {
     .data(randomMeals)
     .html((d, i) => `Meal ${i+1} |
                     Carb content: ${motherJSON[d].total_carb.toFixed(2)}
-                    Protein content: ${motherJSON[d].protein.toFixed(2)}`);  
+                    Protein content: ${motherJSON[d].protein.toFixed(2)}`);
 
   d3.select('.guess-graph').selectAll('*').remove();
   d3.select('.guess-legend').selectAll('*').remove();
